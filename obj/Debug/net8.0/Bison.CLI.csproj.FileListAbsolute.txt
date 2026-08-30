@@ -1,0 +1,14 @@
+/home/seb/Bison.CLI/bin/Debug/net8.0/Bison.CLI
+/home/seb/Bison.CLI/bin/Debug/net8.0/Bison.CLI.deps.json
+/home/seb/Bison.CLI/bin/Debug/net8.0/Bison.CLI.runtimeconfig.json
+/home/seb/Bison.CLI/bin/Debug/net8.0/Bison.CLI.dll
+/home/seb/Bison.CLI/bin/Debug/net8.0/Bison.CLI.pdb
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.GeneratedMSBuildEditorConfig.editorconfig
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.AssemblyInfoInputs.cache
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.AssemblyInfo.cs
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.csproj.CoreCompileInputs.cache
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.dll
+/home/seb/Bison.CLI/obj/Debug/net8.0/refint/Bison.CLI.dll
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.pdb
+/home/seb/Bison.CLI/obj/Debug/net8.0/Bison.CLI.genruntimeconfig.cache
+/home/seb/Bison.CLI/obj/Debug/net8.0/ref/Bison.CLI.dll
