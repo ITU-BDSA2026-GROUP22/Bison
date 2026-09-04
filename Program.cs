@@ -39,15 +39,14 @@ void read_observations()
 }
 
 void add_observation() {
-    string observation = args[1];
-    string author = Environment.UserName;
-    long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    Cheep cheep = new Cheep(Environment.UserName, args[1], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-        observation = observation.Replace("\"", "\"\"");
+    using (StreamWriter writer = new StreamWriter(fileName, append: true))
+    using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+    {
+        csv.WriteRecord(cheep);
+        csv.NextRecord();
+    }
 
-        using (StreamWriter writer = File.AppendText(fileName)) {
-            writer.WriteLine($"{author},\"{observation}\",{timestamp}");
-        }
-
-        Console.WriteLine("Observation added.");
+    Console.WriteLine("Observation added.");
 }
