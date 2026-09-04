@@ -38,6 +38,19 @@
         "runtime": {
           "lib/netcoreapp2.0/_._": {}
         }
+      },
+      "SimpleDB/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "CsvHelper": "33.1.0"
+        },
+        "compile": {
+          "bin/placeholder/SimpleDB.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SimpleDB.dll": {}
+        }
       }
     }
   },
@@ -108,11 +121,16 @@
         "system.valuetuple.4.6.1.nupkg.sha512",
         "system.valuetuple.nuspec"
       ]
+    },
+    "SimpleDB/1.0.0": {
+      "type": "project",
+      "path": "SimpleDB/SimpleDB.csproj",
+      "msbuildProject": "SimpleDB/SimpleDB.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "CsvHelper >= 33.1.0",
+      "SimpleDB >= 1.0.0",
       "docopt.net >= 0.8.3"
     ]
   },
@@ -140,7 +158,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\45537\\Bison\\SimpleDB\\SimpleDB.csproj": {
+              "projectPath": "C:\\Users\\45537\\Bison\\SimpleDB\\SimpleDB.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -158,10 +180,6 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
-          "CsvHelper": {
-            "target": "Package",
-            "version": "[33.1.0, )"
-          },
           "docopt.net": {
             "target": "Package",
             "version": "[0.8.3, )"

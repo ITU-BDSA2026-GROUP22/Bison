@@ -15,4 +15,8 @@
     <ProjectReference Include="SimpleDB\SimpleDB.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="SimpleDB/**/*.cs" />
+  </ItemGroup>
+
 </Project>
