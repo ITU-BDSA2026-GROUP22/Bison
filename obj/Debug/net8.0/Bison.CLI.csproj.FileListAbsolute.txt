@@ -27,3 +27,7 @@ C:\Users\45537\Bison\obj\Debug\net8.0\refint\Bison.CLI.dll
 C:\Users\45537\Bison\obj\Debug\net8.0\Bison.CLI.pdb
 C:\Users\45537\Bison\obj\Debug\net8.0\Bison.CLI.genruntimeconfig.cache
 C:\Users\45537\Bison\obj\Debug\net8.0\ref\Bison.CLI.dll
+C:\Users\45537\Bison\obj\Debug\net8.0\Bison.CLI.csproj.AssemblyReference.cache
+C:\Users\45537\Bison\bin\Debug\net8.0\CsvHelper.dll
+C:\Users\45537\Bison\bin\Debug\net8.0\DocoptNet.dll
+C:\Users\45537\Bison\obj\Debug\net8.0\Bison.CLI.csproj.Up2Date
