@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/seb/Bison.CLI/Bison.CLI.csproj": {}
+    "C:\\Users\\45537\\Bison\\Bison.CLI.csproj": {}
   },
   "projects": {
-    "/home/seb/Bison.CLI/Bison.CLI.csproj": {
+    "C:\\Users\\45537\\Bison\\Bison.CLI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/seb/Bison.CLI/Bison.CLI.csproj",
+        "projectUniqueName": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
         "projectName": "Bison.CLI",
-        "projectPath": "/home/seb/Bison.CLI/Bison.CLI.csproj",
-        "packagesPath": "/home/seb/.nuget/packages/",
-        "outputPath": "/home/seb/Bison.CLI/obj/",
+        "projectPath": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
+        "packagesPath": "C:\\Users\\45537\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\45537\\Bison\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/seb/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\45537\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,11 +32,26 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.1.0, )"
+            },
+            "docopt.net": {
+              "target": "Package",
+              "version": "[0.8.3, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -53,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.130/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

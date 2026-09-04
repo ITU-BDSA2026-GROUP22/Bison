@@ -1,26 +1,135 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "CsvHelper/33.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/CsvHelper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/CsvHelper.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "docopt.net/0.8.3": {
+        "type": "package",
+        "dependencies": {
+          "System.ValueTuple": "4.6.1"
+        },
+        "compile": {
+          "lib/netstandard2.1/DocoptNet.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/DocoptNet.dll": {}
+        },
+        "build": {
+          "build/netstandard2.0/docopt.net.targets": {}
+        }
+      },
+      "System.ValueTuple/4.6.1": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/_._": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "CsvHelper/33.1.0": {
+      "sha512": "kqfTOZGrn7NarNeXgjh86JcpTHUoeQDMB8t9NVa/ZtlSYiV1rxfRnQ49WaJsob4AiGrbK0XDzpyKkBwai4F8eg==",
+      "type": "package",
+      "path": "csvhelper/33.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "csvhelper.33.1.0.nupkg.sha512",
+        "csvhelper.nuspec",
+        "lib/net462/CsvHelper.dll",
+        "lib/net462/CsvHelper.xml",
+        "lib/net47/CsvHelper.dll",
+        "lib/net47/CsvHelper.xml",
+        "lib/net48/CsvHelper.dll",
+        "lib/net48/CsvHelper.xml",
+        "lib/net8.0/CsvHelper.dll",
+        "lib/net8.0/CsvHelper.xml",
+        "lib/net9.0/CsvHelper.dll",
+        "lib/net9.0/CsvHelper.xml",
+        "lib/netstandard2.0/CsvHelper.dll",
+        "lib/netstandard2.0/CsvHelper.xml",
+        "lib/netstandard2.1/CsvHelper.dll",
+        "lib/netstandard2.1/CsvHelper.xml"
+      ]
+    },
+    "docopt.net/0.8.3": {
+      "sha512": "Ev2Q5lOhr2Ee+MGi9zu7f/g5ry5RU3EyoyjHE03TvjZjjDtDysaPhNjiTy0DyW9HTttxCs6XKJLpcjXnGpWOpA==",
+      "type": "package",
+      "path": "docopt.net/0.8.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "PackageIcon.png",
+        "analyzers/dotnet/cs/DocoptNet.dll",
+        "build/netstandard2.0/docopt.net.targets",
+        "docopt.net.0.8.3.nupkg.sha512",
+        "docopt.net.nuspec",
+        "lib/net47/DocoptNet.dll",
+        "lib/netstandard2.0/DocoptNet.dll",
+        "lib/netstandard2.1/DocoptNet.dll"
+      ]
+    },
+    "System.ValueTuple/4.6.1": {
+      "sha512": "+RJT4qaekpZ7DDLhf+LTjq+E48jieKiY9ulJ+BoxKmZblIJfIJT8Ufcaa/clQqnYvWs8jugfGSMu8ylS0caG0w==",
+      "type": "package",
+      "path": "system.valuetuple/4.6.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "build/net471/System.ValueTuple.targets",
+        "buildTransitive/net461/System.ValueTuple.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net471/System.ValueTuple.targets",
+        "lib/net462/System.ValueTuple.dll",
+        "lib/net462/System.ValueTuple.xml",
+        "lib/net47/System.ValueTuple.dll",
+        "lib/net47/System.ValueTuple.xml",
+        "lib/net471/_._",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard2.0/_._",
+        "system.valuetuple.4.6.1.nupkg.sha512",
+        "system.valuetuple.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "CsvHelper >= 33.1.0",
+      "docopt.net >= 0.8.3"
+    ]
   },
   "packageFolders": {
-    "/home/seb/.nuget/packages/": {}
+    "C:\\Users\\45537\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/seb/Bison.CLI/Bison.CLI.csproj",
+      "projectUniqueName": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
       "projectName": "Bison.CLI",
-      "projectPath": "/home/seb/Bison.CLI/Bison.CLI.csproj",
-      "packagesPath": "/home/seb/.nuget/packages/",
-      "outputPath": "/home/seb/Bison.CLI/obj/",
+      "projectPath": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
+      "packagesPath": "C:\\Users\\45537\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\45537\\Bison\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/seb/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\45537\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -38,11 +147,26 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
       "net8.0": {
         "targetAlias": "net8.0",
+        "dependencies": {
+          "CsvHelper": {
+            "target": "Package",
+            "version": "[33.1.0, )"
+          },
+          "docopt.net": {
+            "target": "Package",
+            "version": "[0.8.3, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -59,7 +183,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.130/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

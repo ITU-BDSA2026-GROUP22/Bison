@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using System.Globalization;
 
 string fileName = "bison_observe_cli_db.csv";
 
@@ -17,39 +19,34 @@ if (command == "read") {
     Console.WriteLine("Invalid command");
 }
 
-void read_observations() {
-    Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+void read_observations() 
+{
+    using (StreamReader reader = new StreamReader(fileName)) 
+    using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+    {
+        IEnumerable<Cheep> cheeps = csv.GetRecords<Cheep>();
 
-    using (StreamReader reader = new StreamReader(fileName)) {
-        string? line;
+        foreach (Cheep cheep in cheeps) 
+        {
+            DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
 
-        reader.ReadLine();
-
-        while ((line = reader.ReadLine()) != null) {
-            string[] X = CSVParser.Split(line);
-
-            string author = X[0];
-            string observation = X[1].Trim('"');
-
-            long timestamp = long.Parse(X[2]);
-
-            DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(timestamp).ToLocalTime();
-
-            Console.WriteLine($"{author} @ {date:MM/dd/yy HH:mm:ss}: {observation}");
+            //Whn u write $ in front of string it make the string "Interpolated String" 
+            //which makes it possible to put variables inside the strng using {...}
+            Console.WriteLine($"{cheep.Author} @ {date:MM/dd/yy HH:mm:ss}: {cheep.Message}");
         }
+
     }
 }
 
 void add_observation() {
-    string observation = args[1];
-    string author = Environment.UserName;
-    long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    Cheep cheep = new Cheep(Environment.UserName, args[1], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-        observation = observation.Replace("\"", "\"\"");
+    using (StreamWriter writer = new StreamWriter(fileName, append: true))
+    using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+    {
+        csv.WriteRecord(cheep);
+        csv.NextRecord();
+    }
 
-        using (StreamWriter writer = File.AppendText(fileName)) {
-            writer.WriteLine($"{author},\"{observation}\",{timestamp}");
-        }
-
-        Console.WriteLine("Observation added.");
+    Console.WriteLine("Observation added.");
 }

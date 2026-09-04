@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "alxe6oufcpy1XsVu0MQkYfkjBYSAaQJjbH8qTqAZvAB+pkc/Y3FTXfwJva9QhHBGPBe97Q4FCuuGveBdjZ4L8A==",
+  "dgSpecHash": "EM3JZRPkuZE=",
   "success": true,
-  "projectFilePath": "/home/seb/Bison.CLI/Bison.CLI.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\45537\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512",
+    "C:\\Users\\45537\\.nuget\\packages\\docopt.net\\0.8.3\\docopt.net.0.8.3.nupkg.sha512",
+    "C:\\Users\\45537\\.nuget\\packages\\system.valuetuple\\4.6.1\\system.valuetuple.4.6.1.nupkg.sha512"
+  ],
   "logs": []
 }
