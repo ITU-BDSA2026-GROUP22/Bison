@@ -1,21 +1,23 @@
 ﻿using SimpleDB;
+using DocoptNet;
 
 string fileName = "bison_observe_cli_db.csv";
 
 IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>(fileName);
 
-if (args.Length == 0) {
-    Console.WriteLine("Invalid command");
-    return;
-}
+const string usage = @"Bison CLI.
+Usage:
+    Bison.CLI read
+    Bison.CLI observe <message>
+";
 
-string command = args[0];
-if (command == "read") {
-    read_observations(); 
-} else if (command == "observe") {
-    add_observation();
-} else {
-    Console.WriteLine("Invalid command");
+var arguments = new Docopt().Apply(usage, args, exit: true)!;
+
+if (arguments["read"].IsTrue) {
+    read_observations();
+} else if (arguments["observe"].IsTrue) {
+    string message = arguments["<message>"].ToString();
+    add_observation(message);
 }
 
 void read_observations() 
@@ -25,12 +27,8 @@ void read_observations()
     UserInterface.PrintObservations(cheeps);
 }
 
-void add_observation() {
-    if (args.Length < 2) {
-        Console.WriteLine("Missing second argument. Please write an observation.");
-        return;
-    }
-    Cheep cheep = new Cheep(Environment.UserName, args[1], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+void add_observation(string message) {
+    Cheep cheep = new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
     database.Store(cheep);
 
