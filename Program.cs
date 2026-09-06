@@ -1,9 +1,8 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using System.Globalization;
+﻿using SimpleDB;
 
 string fileName = "bison_observe_cli_db.csv";
 
+IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>(fileName);
 
 if (args.Length == 0) {
     Console.WriteLine("Invalid command");
@@ -21,32 +20,26 @@ if (command == "read") {
 
 void read_observations() 
 {
-    using (StreamReader reader = new StreamReader(fileName)) 
-    using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+    IEnumerable<Cheep> cheeps = database.Read();
+
+    foreach (Cheep cheep in cheeps) 
     {
-        IEnumerable<Cheep> cheeps = csv.GetRecords<Cheep>();
+        DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
 
-        foreach (Cheep cheep in cheeps) 
-        {
-            DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).ToLocalTime();
-
-            //Whn u write $ in front of string it make the string "Interpolated String" 
-            //which makes it possible to put variables inside the strng using {...}
-            Console.WriteLine($"{cheep.Author} @ {date:MM/dd/yy HH:mm:ss}: {cheep.Message}");
-        }
-
+        //Whn u write $ in front of string it make the string "Interpolated String" 
+        //which makes it possible to put variables inside the strng using {...}
+        Console.WriteLine($"{cheep.Author} @ {date:MM/dd/yy HH:mm:ss}: {cheep.Message}");
     }
 }
 
 void add_observation() {
+    if (args.Length < 2) {
+        Console.WriteLine("Missing second argument. Please write an observation.");
+        return;
+    }
     Cheep cheep = new Cheep(Environment.UserName, args[1], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-    using (StreamWriter writer = new StreamWriter(fileName, append: true))
-    using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-    {
-        csv.WriteRecord(cheep);
-        csv.NextRecord();
-    }
+    database.Store(cheep);
 
     Console.WriteLine("Observation added.");
 }

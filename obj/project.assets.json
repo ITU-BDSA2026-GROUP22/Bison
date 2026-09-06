@@ -135,19 +135,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\45537\\.nuget\\packages\\": {}
+    "/home/seb/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
+      "projectUniqueName": "/home/seb/Bison.CLI/Bison.CLI.csproj",
       "projectName": "Bison.CLI",
-      "projectPath": "C:\\Users\\45537\\Bison\\Bison.CLI.csproj",
-      "packagesPath": "C:\\Users\\45537\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\45537\\Bison\\obj\\",
+      "projectPath": "/home/seb/Bison.CLI/Bison.CLI.csproj",
+      "packagesPath": "/home/seb/.nuget/packages/",
+      "outputPath": "/home/seb/Bison.CLI/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\45537\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/seb/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -159,8 +159,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\45537\\Bison\\SimpleDB\\SimpleDB.csproj": {
-              "projectPath": "C:\\Users\\45537\\Bison\\SimpleDB\\SimpleDB.csproj"
+            "/home/seb/Bison.CLI/SimpleDB/SimpleDB.csproj": {
+              "projectPath": "/home/seb/Bison.CLI/SimpleDB/SimpleDB.csproj"
             }
           }
         }
@@ -169,11 +169,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -201,7 +196,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.424/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.130/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
