@@ -1,10 +1,11 @@
-Author,Message,Timestamp
-ropf,"A bird at DR Byen",1690891760
-adho,"I think that is a Heron at DR Byen",1690978778
-edka,"Ardea cinerea at DR Byen",1690979858
-seb,"Heron at DR Byen",1788100775
-45537,bluej på hegnet,1788524588
-45537,Heron at DR Byen,1788528000
-45537,"Bird, near the lake",1788528015
-seb,parrot on the moon (simpleDB test),1788669708
-seb,parrot on the sun (docoptNet test),1788673359
+ID,Author,Message,Timestamp
+1,ropf,"A bird at DR Byen",1690891760
+2,adho,"I think that is a Heron at DR Byen",1690978778
+3,edka,"Ardea cinerea at DR Byen",1690979858
+4,seb,"Heron at DR Byen",1788100775
+5,45537,bluej på hegnet,1788524588
+6,45537,Heron at DR Byen,1788528000
+7,45537,"Bird, near the lake",1788528015
+8,seb,parrot on the moon (simpleDB test),1788669708
+9,seb,parrot on the sun (docoptNet test),1788673359
+10,seb,parrot behind the sun,1788676066
