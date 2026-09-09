@@ -18,10 +18,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore src/Bison.CLI/Bison.CLI.csproj
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build src/Bison.CLI/Bison.CLI.csproj --no-restore
 
       - name: Test
-        run: dotnet test --no-build
+        run: dotnet test src/Bison.CLI/Bison.CLI.csproj --no-build
