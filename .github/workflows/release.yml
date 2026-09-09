@@ -22,19 +22,19 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build
-        run: dotnet build -c Release
+        run: dotnet build src/Bison.CLI/Bison.CLI.csproj -c Release
 
       - name: Test
-        run: dotnet test -c Release --no-build
+        run: dotnet test src/Bison.CLI/Bison.CLI.csproj -c Release --no-build
 
       - name: Publish Windows version
-        run: dotnet publish Bison.CLI.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/win-x64
+        run: dotnet publish src/Bison.CLI/Bison.CLI.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish/win-x64
 
       - name: Publish Linux version
-        run: dotnet publish Bison.CLI.csproj -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o publish/linux-x64
+        run: dotnet publish src/Bison.CLI/Bison.CLI.csproj -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o publish/linux-x64
 
       - name: Publish macOS version
-        run: dotnet publish Bison.CLI.csproj -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o publish/osx-x64
+        run: dotnet publish src/Bison.CLI/Bison.CLI.csproj -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o publish/osx-x64
 
       - name: Zip executables
         run: |

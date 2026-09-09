@@ -12,11 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="SimpleDB\SimpleDB.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="SimpleDB/**/*.cs" />
+    <ProjectReference Include="..\Database\SimpleDB.csproj" />
   </ItemGroup>
 
 </Project>
