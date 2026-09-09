@@ -1,0 +1,17 @@
+name: Add Issues and PRs to Project Board
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add item to project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/ITU-BDSA2026-GROUP22/projects/1
+          github-token: ${{ secrets.PAT_TOKEN }}

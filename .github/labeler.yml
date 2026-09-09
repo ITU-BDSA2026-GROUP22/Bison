@@ -1,0 +1,21 @@
+database:
+  - changed-files:
+      - any-glob-to-any-file: 'SimpleDB/**'
+
+cli:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.cs'
+          - 'Bison.CLI.csproj'
+
+ci/cd:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+
+data:
+  - changed-files:
+      - any-glob-to-any-file: '*.csv'
