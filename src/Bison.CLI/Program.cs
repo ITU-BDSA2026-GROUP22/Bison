@@ -4,8 +4,9 @@ using DocoptNet;
 string observationFileName = "bison_observe_cli_db.csv";
 string commentFileName = "bison_comment_cli_db.csv";
 
-IDatabaseRepository<Observation> observationDatabase = new CSVDatabase<Observation>(observationFileName);
-IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(commentFileName);
+IDatabaseRepository<Observation> observationDatabase = CSVDatabase<Observation>.Instance(observationFileName);
+
+IDatabaseRepository<Comment> commentDatabase = CSVDatabase<Comment>.Instance(commentFileName);
 
 
 const string usage = @"Bison CLI.
