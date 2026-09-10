@@ -7,7 +7,7 @@ public class BisonServiceTests
         TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
         BisonService service = new BisonService(observations, comments);
 
-        bool result = service.AddComment("Test Comment", observationID: 42);
+        bool result = service.AddComment("Test Comment", observationID: 67);
 
         Assert.False(result);
         Assert.Empty(comments.Records);
@@ -29,8 +29,8 @@ public class BisonServiceTests
     public void AddObservation_ExistingObservations_AssignsMaxIDPlusOne()
     {
         TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        Observation firstExistingObservation = new Observation(1, "Bob", "TestMessage1", 1000);
-        Observation secondExistingObservation = new Observation(5, "Carl", "TestMessage2", 1000);
+        Observation firstExistingObservation = new Observation(1, "Bob", "TestMessage1", 9999999);
+        Observation secondExistingObservation = new Observation(5, "Carl", "TestMessage2", 7);
         observations.Store(firstExistingObservation);
         observations.Store(secondExistingObservation);
 
@@ -48,9 +48,9 @@ public class BisonServiceTests
         TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
         TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
 
-        Comment firstCommentOnObservationOne = new Comment(1, "Bob", "TestComment1", 1000);
-        Comment commentOnObservationTwo = new Comment(2, "Carl", "TestComment2", 1000);
-        Comment secondCommentOnObservationOne = new Comment(1, "Daniel", "TestComment3", 1000);
+        Comment firstCommentOnObservationOne = new Comment(1, "Bob", "TestComment1", 420);
+        Comment commentOnObservationTwo = new Comment(2, "Carl", "TestComment2", 69);
+        Comment secondCommentOnObservationOne = new Comment(1, "Daniel", "TestComment3", 4206967);
         comments.Store(firstCommentOnObservationOne);
         comments.Store(commentOnObservationTwo);
         comments.Store(secondCommentOnObservationOne);

@@ -4,8 +4,8 @@ using DocoptNet;
 string observationFileName = "bison_observe_cli_db.csv";
 string commentFileName = "bison_comment_cli_db.csv";
 
-IDatabaseRepository<Observation> observationDatabase = CSVDatabase<Observation>.Instance(observationFileName);
-IDatabaseRepository<Comment> commentDatabase = CSVDatabase<Comment>.Instance(commentFileName);
+IDatabaseRepository<Observation> observationDatabase = new CSVDatabase<Observation>(observationFileName);
+IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(commentFileName);
 
 BisonService bisonService = new BisonService(observationDatabase, commentDatabase);
 
