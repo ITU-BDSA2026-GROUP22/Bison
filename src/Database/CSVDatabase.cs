@@ -8,21 +8,9 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _fileName;
 
-    private static CSVDatabase<T>? _instance;
-
-    private CSVDatabase(string fileName)
+    public CSVDatabase(string fileName)
     {
         _fileName = fileName;
-    }
-
-    public static CSVDatabase<T> Instance(string fileName)
-    {
-        if (_instance == null)
-        {
-            _instance = new CSVDatabase<T>(fileName);
-        }
-
-        return _instance;
     }
 
     public IEnumerable<T> Read(int? limit = null)

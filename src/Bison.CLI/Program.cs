@@ -4,9 +4,10 @@ using DocoptNet;
 string observationFileName = "bison_observe_cli_db.csv";
 string commentFileName = "bison_comment_cli_db.csv";
 
-IDatabaseRepository<Observation> observationDatabase = CSVDatabase<Observation>.Instance(observationFileName);
+IDatabaseRepository<Observation> observationDatabase = new CSVDatabase<Observation>(observationFileName);
+IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(commentFileName);
 
-IDatabaseRepository<Comment> commentDatabase = CSVDatabase<Comment>.Instance(commentFileName);
+BisonService bisonService = new BisonService(observationDatabase, commentDatabase);
 
 
 const string usage = @"Bison CLI.
@@ -38,66 +39,38 @@ if (arguments["read"].IsTrue) {
     }
 }
 
-void read_observations() 
+void read_observations()
 {
-    IEnumerable<Observation> cheeps = observationDatabase.Read();
+    IEnumerable<Observation> cheeps = bisonService.ReadObservations();
 
     UserInterface.PrintObservations(cheeps);
 }
 
 void add_observation(string message) {
-    IEnumerable<Observation> observations = observationDatabase.Read();
-    
-    int nextID;
-   
-    if (observations.Any()) {
-        nextID = observations.Max(observation => observation.ID) + 1;
-    } else {
-        nextID = 1;
-    }
+    Observation observation = bisonService.AddObservation(message);
 
-    Observation observation = new Observation(
-        nextID,
-        Environment.UserName, 
-        message, 
-        DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-    );
-
-    observationDatabase.Store(observation);
-    Console.WriteLine($"Observation with ID: {nextID} added.");
+    Console.WriteLine($"Observation with ID: {observation.ID} added.");
 }
 
 void add_comment(string message, int observationID) {
-    IEnumerable<Observation> observations = observationDatabase.Read();
+    bool commentWasAdded = bisonService.AddComment(message, observationID);
 
-    bool observationExists = observations.Any(observation => observation.ID == observationID);
-
-    if (!observationExists) {
+    if (commentWasAdded) {
+        Console.WriteLine("Comment added.");
+    } else {
         Console.WriteLine($"Observation with ID: {observationID} does not exist.");
-        return;
     }
-
-    Comment comment = new Comment(
-        observationID,
-        Environment.UserName, 
-        message, 
-        DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-    );
-
-    commentDatabase.Store(comment);
-    Console.WriteLine("Comment added.");
 }
 
 void show_discussion(int observationID) {
-    IEnumerable<Observation> observations = observationDatabase.Read();
-    bool observationExists = observations.Any(observation => observation.ID == observationID);
+    bool observationExists = bisonService.ObservationExists(observationID);
 
     if (!observationExists) {
         Console.WriteLine($"Observation with ID: {observationID} does not exist.");
         return;
     }
 
-    IEnumerable<Comment> comments = commentDatabase.Read().Where(comment => comment.ObservationID == observationID);
+    IEnumerable<Comment> comments = bisonService.GetComments(observationID);
 
     UserInterface.PrintComments(comments);
 }
