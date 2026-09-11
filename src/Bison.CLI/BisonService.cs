@@ -16,14 +16,20 @@ public class BisonService
         return observationDatabase.Read();
     }
 
-    public Observation AddObservation(string message)
+    public IEnumerable<Observation> ReadObservationsAt(string location)
+    {
+        return observationDatabase.Read().Where(observation => observation.Location == location);
+    }
+    
+    public Observation AddObservation(string message, string location = "")
     {
         IEnumerable<Observation> observations = observationDatabase.Read();
 
         int nextID;
 
-        if (observations.Any()) {
-            nextID = observations.Max(observation => observation.ID) + 1;
+        var enumerable = observations as Observation[] ?? observations.ToArray();
+        if (enumerable.Any()) {
+            nextID = enumerable.Max(observation => observation.ID) + 1;
         } else {
             nextID = 1;
         }
@@ -32,7 +38,8 @@ public class BisonService
             nextID,
             Environment.UserName,
             message,
-            DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            location
         );
 
         observationDatabase.Store(observation);
