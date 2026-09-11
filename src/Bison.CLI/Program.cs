@@ -12,8 +12,8 @@ BisonService bisonService = new BisonService(observationDatabase, commentDatabas
 
 const string usage = @"Bison CLI.
 Usage:
-    Bison.CLI read
-    Bison.CLI observe <message>
+    Bison.CLI read [<location>]
+    Bison.CLI observe <message> [<location>]
     Bison.CLI comment <message> <id>
     Bison.CLI discussion <id>
 ";
@@ -21,11 +21,13 @@ Usage:
 var arguments = new Docopt().Apply(usage, args, exit: true)!;
 
 if (arguments["read"].IsTrue) {
-    read_observations();
+    string location = arguments["<location>"].Value?.ToString() ?? "";
+    read_observations(location);
 
 } else if (arguments["observe"].IsTrue) {
     string message = arguments["<message>"].ToString();
-    add_observation(message);
+    string location = arguments["<location>"].Value?.ToString() ?? "";
+    add_observation(message, location);
 
 } else if (arguments["comment"].IsTrue) {
     string message = arguments["<message>"].ToString();
@@ -39,15 +41,21 @@ if (arguments["read"].IsTrue) {
     }
 }
 
-void read_observations()
+void read_observations(string location)
 {
     IEnumerable<Observation> cheeps = bisonService.ReadObservations();
-
+    
+    if (location == "")
+    {
+        cheeps = bisonService.ReadObservations();
+    } else {
+        cheeps = bisonService.ReadObservationsAt(location);
+    }
     UserInterface.PrintObservations(cheeps);
 }
 
-void add_observation(string message) {
-    Observation observation = bisonService.AddObservation(message);
+void add_observation(string message, string location) {
+    Observation observation = bisonService.AddObservation(message, location);
 
     Console.WriteLine($"Observation with ID: {observation.ID} added.");
 }
