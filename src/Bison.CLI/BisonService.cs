@@ -18,7 +18,7 @@ public class BisonService
 
     public IEnumerable<Observation> ReadObservationsAt(string location)
     {
-        return observationDatabase.Read().Where(observation => observation.Location == location);
+        return observationDatabase.Read().Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase));
     }
     
     public Observation AddObservation(string message, string location = "")
