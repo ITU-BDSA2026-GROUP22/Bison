@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IDatabaseRepository<Observation>>(new CSVDatabase<Observation>("observations.csv"));
 builder.Services.AddSingleton<IDatabaseRepository<Comment>>(new CSVDatabase<Comment>("comments.csv"));
 
+var taxonomy = TaxonomyLoader.Load();
+
 var app = builder.Build();
 
 // observations
