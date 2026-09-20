@@ -16,15 +16,16 @@ public class BisonService
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<IEnumerable<Observation>?> ReadObservations()
+    public async Task<IEnumerable<Observation>> ReadObservations()
     {
-       return await client.GetFromJsonAsync<IEnumerable<Observation>>("observations");
+        var observations = await client.GetFromJsonAsync<List<Observation>>("observations");
+        return observations ?? new List<Observation>();
     }
 
-    public async Task<IEnumerable<Observation>?> ReadObservationsAt(string location)
+    public async Task<IEnumerable<Observation>> ReadObservationsAt(string location)
     {
-        IEnumerable<Observation> observations = await client.GetFromJsonAsync<IEnumerable<Observation>>("observations");
-        return observations.Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase));
+        var observations = await client.GetFromJsonAsync<List<Observation>>("observations");
+        return observations?.Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase)) ?? new List<Observation>();
     }
     
     public async Task<Observation> AddObservation(string message, string location = "")
@@ -69,7 +70,7 @@ public class BisonService
 
     public async Task<IEnumerable<Comment>> GetComments(int observationID)
     {
-        IEnumerable<Comment> comments = await client.GetFromJsonAsync<IEnumerable<Comment>>("comments");
-        return comments.Where(comment => comment.ObservationID == observationID);
+        var comments = await client.GetFromJsonAsync<List<Comment>>("comments");
+        return comments?.Where(comment => comment.ObservationID == observationID) ?? new List<Comment>();
     }
 }

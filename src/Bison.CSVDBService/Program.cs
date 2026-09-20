@@ -32,7 +32,8 @@ app.MapPost("/observation", (IDatabaseRepository<Observation> db, NewObservation
         newObservationId,
         request.Author,
         request.Message,
-        request.Timestamp
+        request.Timestamp,
+        request.Location
     );
 
     db.Store(newObservation);
@@ -99,8 +100,8 @@ app.MapPost("/proposal", (IDatabaseRepository<Observation> observationDb, IDatab
 
 app.Run();
 
-public record Observation(int ID, string Author, string Message, long Timestamp);
-public record NewObservationRequest(string Author, string Message, long Timestamp);
+public record Observation(int ID, string Author, string Message, long Timestamp, string Location = "");
+public record NewObservationRequest(string Author, string Message, long Timestamp, string Location = "");
 public record Comment(int ObservationId, string Author, string Message, long Timestamp);
 public record Proposal(int ObservationId, string Author, string TaxonId, long Timestamp);
 
