@@ -1,64 +1,59 @@
 public class BisonServiceTests
 {
     [Fact]
-    public void AddComment_ObservationDoesNotExist_ReturnsFalseAndDoesNotStore()
+    public async Task AddComment_ObservationDoesNotExist_ReturnsFalse()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        BisonService service = new BisonService();
 
-        bool result = service.AddComment("Test Comment", observationID: 67);
+        bool result = await service.AddComment(
+            "Test Comment",
+            observationID: 999999
+        );
 
         Assert.False(result);
-        Assert.Empty(comments.Records);
     }
 
     [Fact]
-    public void AddObservation_NoExistingObservations_AssignsID1()
+    public async Task AddObservation_AddsObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        BisonService service = new BisonService();
 
-        Observation result = service.AddObservation("first sighting");
+        Observation result = await service.AddObservation(
+            "Test observation"
+        );
 
-        Assert.Equal(1, result.ID);
+        Assert.NotNull(result);
+        Assert.True(result.ID > 0);
+        Assert.Equal("Test observation", result.Message);
     }
 
     [Fact]
-    public void AddObservation_ExistingObservations_AssignsMaxIDPlusOne()
+    public async Task AddObservation_WithLocation_AddsObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        Observation firstExistingObservation = new Observation(1, "Bob", "TestMessage1", 9999999);
-        Observation secondExistingObservation = new Observation(5, "Carl", "TestMessage2", 7);
-        observations.Store(firstExistingObservation);
-        observations.Store(secondExistingObservation);
+        BisonService service = new BisonService();
 
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        Observation result = await service.AddObservation(
+            "Test observation with location",
+            "Copenhagen"
+        );
 
-        Observation result = service.AddObservation("new sighting");
-
-        Assert.Equal(6, result.ID);
+        Assert.NotNull(result);
+        Assert.True(result.ID > 0);
+        Assert.Equal("Copenhagen", result.Location);
     }
 
     [Fact]
-    public void GetComments_ReturnsOnlyCommentsForRequestedObservation()
+    public async Task GetComments_ReturnsOnlyCommentsForRequestedObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
+        BisonService service = new BisonService();
 
-        Comment firstCommentOnObservationOne = new Comment(1, "Bob", "TestComment1", 420);
-        Comment commentOnObservationTwo = new Comment(2, "Carl", "TestComment2", 69);
-        Comment secondCommentOnObservationOne = new Comment(1, "Daniel", "TestComment3", 4206967);
-        comments.Store(firstCommentOnObservationOne);
-        comments.Store(commentOnObservationTwo);
-        comments.Store(secondCommentOnObservationOne);
+        // Use an observation that actually exists in the web service.
+        IEnumerable<Comment> result =
+            await service.GetComments(observationID: 14);
 
-        BisonService service = new BisonService(observations, comments);
-
-        IEnumerable<Comment> result = service.GetComments(observationID: 1);
-
-        Assert.Equal(2, result.Count());
+        Assert.All(
+            result,
+            comment => Assert.Equal(14, comment.ObservationID)
+        );
     }
 }

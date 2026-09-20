@@ -1,61 +1,56 @@
 using SimpleDB;
-
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 public class BisonService
 {
-    private readonly IDatabaseRepository<Observation> observationDatabase;
-    private readonly IDatabaseRepository<Comment> commentDatabase;
 
-    public BisonService(IDatabaseRepository<Observation> observationDatabase, IDatabaseRepository<Comment> commentDatabase)
+    private readonly HttpClient client;
+
+    public BisonService()
     {
-        this.observationDatabase = observationDatabase;
-        this.commentDatabase = commentDatabase;
+        client = new HttpClient();
+        client.BaseAddress = new Uri("http://localhost:5257");
+
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public IEnumerable<Observation> ReadObservations()
+    public async Task<IEnumerable<Observation>?> ReadObservations()
     {
-        return observationDatabase.Read();
+       return await client.GetFromJsonAsync<IEnumerable<Observation>>("observations");
     }
 
-    public IEnumerable<Observation> ReadObservationsAt(string location)
+    public async Task<IEnumerable<Observation>?> ReadObservationsAt(string location)
     {
-        return observationDatabase.Read().Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase));
+        IEnumerable<Observation> observations = await client.GetFromJsonAsync<IEnumerable<Observation>>("observations");
+        return observations.Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase));
     }
     
-    public Observation AddObservation(string message, string location = "")
+    public async Task<Observation> AddObservation(string message, string location = "")
     {
-        IEnumerable<Observation> observations = observationDatabase.Read();
+        NewObservationRequest request = new NewObservationRequest(
+        Environment.UserName,
+        message,
+        DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+    );
 
-        int nextID;
+        HttpResponseMessage response = await client.PostAsJsonAsync("observation", request);
 
-        var enumerable = observations as Observation[] ?? observations.ToArray();
-        if (enumerable.Any()) {
-            nextID = enumerable.Max(observation => observation.ID) + 1;
-        } else {
-            nextID = 1;
-        }
+        response.EnsureSuccessStatusCode();
 
-        Observation observation = new Observation(
-            nextID,
-            Environment.UserName,
-            message,
-            DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            location
-        );
-
-        observationDatabase.Store(observation);
-
-        return observation;
+        return await response.Content.ReadFromJsonAsync<Observation>();
     }
 
-    public bool ObservationExists(int observationID)
+    public async Task<bool> ObservationExists(int observationID)
     {
-        IEnumerable<Observation> observations = observationDatabase.Read();
+        IEnumerable<Observation> observations = await ReadObservations();
         return observations.Any(observation => observation.ID == observationID);
     }
 
-    public bool AddComment(string message, int observationID)
+    public async Task<bool> AddComment(string message, int observationID)
     {
-        if (!ObservationExists(observationID)) {
+        if (!await ObservationExists(observationID)) {
             return false;
         }
 
@@ -66,14 +61,15 @@ public class BisonService
             DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         );
 
-        commentDatabase.Store(comment);
+        HttpResponseMessage response = await client.PostAsJsonAsync("comment", comment);
+        response.EnsureSuccessStatusCode();
 
-        return true;
+        return response.IsSuccessStatusCode;
     }
 
-    public IEnumerable<Comment> GetComments(int observationID)
+    public async Task<IEnumerable<Comment>> GetComments(int observationID)
     {
-        IEnumerable<Comment> comments = commentDatabase.Read();
+        IEnumerable<Comment> comments = await client.GetFromJsonAsync<IEnumerable<Comment>>("comments");
         return comments.Where(comment => comment.ObservationID == observationID);
     }
 }

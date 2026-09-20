@@ -9,4 +9,7 @@ ID,Location,Author,Message,Timestamp
 8,,seb,parrot on the moon (simpleDB test),1788669708
 9,,seb,parrot on the sun (docoptNet test),1788673359
 10,,seb,parrot behind the sun,1788676066
-11,Copenhagen,45537,Heron,1789130132
+11,Copenhagen,45537,Heron,178913013212,,lars,This is my test observation,1789918928
+12,Copenhagen,lars,This is my Copenhagen observation,1789918937
+13,,lars,TEST ONE,1789919048
+14,,lars,TEST TWO,1789919063
