@@ -6,6 +6,7 @@ using SimpleDB;
 
 public class ProposalFuzzTests : IDisposable
 {
+    // Arbitrarily chosen Taxon IDs. This is the pool of IDs that our fuzz tests will pick from
     private static readonly List<string> ValidTaxonIds = new List<string>
     {
         "MSTSNM:Arter:3e4e67e4-f785-ea11-aa77-501ac539d1ea",
@@ -19,6 +20,7 @@ public class ProposalFuzzTests : IDisposable
     private const int NumberOfValidObservationsToCreate = 5;
     private const int NumberOfFuzzIterations = 500;
 
+    // Separate file names so they don't get mixed up with ProposalEndpointTests. Allows xUnit to safely run them in parallel
     private const string ObservationsFileName = "proposalFuzzTests_observations.csv";
     private const string ProposalsFileName = "proposalFuzzTests_proposals.csv";
 
@@ -31,6 +33,7 @@ public class ProposalFuzzTests : IDisposable
         DeleteFileIfItExists(ObservationsFileName);
         DeleteFileIfItExists(ProposalsFileName);
 
+        // Replaces the default databases with the files used for the tests
         webApplicationFactory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(webHostBuilder =>
             {
@@ -43,7 +46,8 @@ public class ProposalFuzzTests : IDisposable
 
         httpClient = webApplicationFactory.CreateClient();
 
-        random = new Random(1234567);
+        // Using fixed seed so failures are reproducible
+        random = new Random(88888888);
     }
 
     private void DeleteFileIfItExists(string fileName)
@@ -85,6 +89,7 @@ public class ProposalFuzzTests : IDisposable
 
     private string CreateRandomText(int minimumLength, int maximumLength)
     {
+        // Intentionally includes characters that can brick CSV files to test that they get stored correctly
         string characterPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,;:'\"!@#$%^&*()[]{}\n";
 
         int length = random.Next(minimumLength, maximumLength + 1);
@@ -116,6 +121,7 @@ public class ProposalFuzzTests : IDisposable
         }
         else
         {
+            // Ensures invalid ID since all IDs are positive and this creates a negative ID
             return -random.Next(1, 1000000);
         }
     }
@@ -138,6 +144,9 @@ public class ProposalFuzzTests : IDisposable
         }
     }
 
+    // Creates 500 random (but weighted) valid or invalid proposals. The test figures out by itself whether each one
+    // should be valid and checks that the service accepts or rejects it accordingly.
+    // It thereafter checks that exactly the valid proposals were stored
     [Fact]
     public async Task PostProposal_MatchesOracle_ForManyRandomlyGeneratedProposals()
     {

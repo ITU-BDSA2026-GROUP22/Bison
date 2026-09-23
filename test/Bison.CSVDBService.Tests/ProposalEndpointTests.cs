@@ -11,6 +11,7 @@ public class ProposalEndpointTests : IDisposable
 
     public ProposalEndpointTests()
     {
+        // Deletes existing test CSVs to ensure that new tests always start with empty databases
         DeleteFileIfItExists("observations.csv");
         DeleteFileIfItExists("proposals.csv");
 

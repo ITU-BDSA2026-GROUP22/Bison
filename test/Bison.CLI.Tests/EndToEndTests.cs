@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 public class EndToEndTests
 {
+    // Tests run from a separate folder, so we need to go to the root of the repo to find the CLI
     private static string GetCliDllPath()
     {
         DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
@@ -51,6 +52,8 @@ public class EndToEndTests
     [Fact]
     public void Read_WithSeededData_PrintsObservation()
     {
+        // Tests need to start with empty databases. The CLI saves its CSVs in whichever folder it runs from,
+        // so running it in a temp folder makes sure it doesn't mess up our actual databases
         DirectoryInfo tempDirectory = Directory.CreateTempSubdirectory();
         try
         {
