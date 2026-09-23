@@ -1,5 +1,6 @@
 using SimpleDB;
 
+// Holds the CLI's logic and methods. Has database as parameter so it can be used for fake test databases
 public class BisonService
 {
     private readonly IDatabaseRepository<Observation> observationDatabase;

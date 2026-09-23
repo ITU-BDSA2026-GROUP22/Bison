@@ -1,12 +1,11 @@
+# Maps changed file paths to PR labels (used by pr-labeler.yml)
 database:
   - changed-files:
-      - any-glob-to-any-file: 'SimpleDB/**'
+      - any-glob-to-any-file: 'src/Database/**'
 
 cli:
   - changed-files:
-      - any-glob-to-any-file:
-          - '*.cs'
-          - 'Bison.CLI.csproj'
+      - any-glob-to-any-file: 'src/Bison.CLI/**'
 
 ci/cd:
   - changed-files:
@@ -18,4 +17,4 @@ documentation:
 
 data:
   - changed-files:
-      - any-glob-to-any-file: '*.csv'
+      - any-glob-to-any-file: '**/*.csv'
