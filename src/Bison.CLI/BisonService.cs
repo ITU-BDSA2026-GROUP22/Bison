@@ -22,6 +22,15 @@ public class BisonService
         return observations ?? new List<Observation>();
     }
 
+    public async Task<IEnumerable<Observation>> ReadObservationsFromAuthor(string author)
+{
+    var observations = await client.GetFromJsonAsync<List<Observation>>(
+        $"observations/{author}"
+    );
+
+    return observations ?? new List<Observation>();
+}
+
     public async Task<IEnumerable<Observation>> ReadObservationsAt(string location)
     {
         var observations = await client.GetFromJsonAsync<List<Observation>>("observations");
@@ -69,7 +78,7 @@ public class BisonService
     }
 
     public async Task<IEnumerable<Comment>> GetComments(int observationID)
-    {
+    {   
         var comments = await client.GetFromJsonAsync<List<Comment>>("comments");
         return comments?.Where(comment => comment.ObservationID == observationID) ?? new List<Comment>();
     }
