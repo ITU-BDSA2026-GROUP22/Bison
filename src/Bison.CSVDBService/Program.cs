@@ -9,6 +9,7 @@ builder.Services.AddSingleton<IDatabaseRepository<Comment>>(new CSVDatabase<Comm
 builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(new CSVDatabase<Proposal>("proposals.csv"));
 
 var taxonomy = TaxonomyLoader.Load();
+// Required for proposals to check for valid TaxonIDs
 builder.Services.AddSingleton(taxonomy);
 
 var app = builder.Build();
@@ -110,4 +111,5 @@ app.Run();
 
 
 
+// Makes Program class public, which allows it to be used for tests
 public partial class Program { }

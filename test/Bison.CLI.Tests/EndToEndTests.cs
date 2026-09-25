@@ -104,6 +104,8 @@ public class EndToEndTests
     [Fact]
     public void Read_WithSeededData_PrintsObservation()
     {
+        // Tests need to start with empty databases. The CLI saves its CSVs in whichever folder it runs from,
+        // so running it in a temp folder makes sure it doesn't mess up our actual databases
         DirectoryInfo tempDirectory = Directory.CreateTempSubdirectory();
         string url = $"http://localhost:{GetFreePort()}";
         Process? service = null;

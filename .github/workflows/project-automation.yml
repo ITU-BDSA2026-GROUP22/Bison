@@ -14,4 +14,5 @@ jobs:
         uses: actions/add-to-project@v1.0.2
         with:
           project-url: https://github.com/orgs/ITU-BDSA2026-GROUP22/projects/1
+          # Regular GitHub tokens cannot access organization project boards. Requires this Personal Access Token as a repo secret
           github-token: ${{ secrets.PAT_TOKEN }}
