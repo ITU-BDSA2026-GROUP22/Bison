@@ -1,62 +1,75 @@
 using SimpleDB;
-
-// Holds the CLI's logic and methods. Has database as parameter so it can be used for fake test databases
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 public class BisonService
 {
-    private readonly IDatabaseRepository<Observation> observationDatabase;
-    private readonly IDatabaseRepository<Comment> commentDatabase;
 
-    public BisonService(IDatabaseRepository<Observation> observationDatabase, IDatabaseRepository<Comment> commentDatabase)
+    private readonly HttpClient client;
+
+   public BisonService()
+{
+    client = new HttpClient();
+
+    string? baseUrl = Environment.GetEnvironmentVariable("BISON_API_URL");
+
+    if (string.IsNullOrEmpty(baseUrl))
     {
-        this.observationDatabase = observationDatabase;
-        this.commentDatabase = commentDatabase;
+        baseUrl = "http://localhost:5257";
     }
 
-    public IEnumerable<Observation> ReadObservations()
+    client.BaseAddress = new Uri(baseUrl);
+
+    client.DefaultRequestHeaders.Accept.Clear();
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+}
+
+    public async Task<IEnumerable<Observation>> ReadObservations()
     {
-        return observationDatabase.Read();
+        var observations = await client.GetFromJsonAsync<List<Observation>>("observations");
+        return observations ?? new List<Observation>();
     }
 
-    public IEnumerable<Observation> ReadObservationsAt(string location)
+    public async Task<IEnumerable<Observation>> ReadObservationsFromAuthor(string author)
+{
+    var observations = await client.GetFromJsonAsync<List<Observation>>(
+        $"observations/{author}"
+    );
+
+    return observations ?? new List<Observation>();
+}
+
+    public async Task<IEnumerable<Observation>> ReadObservationsAt(string location)
     {
-        return observationDatabase.Read().Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase));
+        var observations = await client.GetFromJsonAsync<List<Observation>>("observations");
+        return observations?.Where(observation => string.Equals(observation.Location, location, StringComparison.OrdinalIgnoreCase)) ?? new List<Observation>();
     }
     
-    public Observation AddObservation(string message, string location = "")
+    public async Task<Observation> AddObservation(string message, string location = "")
     {
-        IEnumerable<Observation> observations = observationDatabase.Read();
+        NewObservationRequest request = new NewObservationRequest(
+        Environment.UserName,
+        message,
+        DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+    );
 
-        int nextID;
+        HttpResponseMessage response = await client.PostAsJsonAsync("observation", request);
 
-        var enumerable = observations as Observation[] ?? observations.ToArray();
-        if (enumerable.Any()) {
-            nextID = enumerable.Max(observation => observation.ID) + 1;
-        } else {
-            nextID = 1;
-        }
+        response.EnsureSuccessStatusCode();
 
-        Observation observation = new Observation(
-            nextID,
-            Environment.UserName,
-            message,
-            DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            location
-        );
-
-        observationDatabase.Store(observation);
-
-        return observation;
+        return await response.Content.ReadFromJsonAsync<Observation>();
     }
 
-    public bool ObservationExists(int observationID)
+    public async Task<bool> ObservationExists(int observationID)
     {
-        IEnumerable<Observation> observations = observationDatabase.Read();
+        IEnumerable<Observation> observations = await ReadObservations();
         return observations.Any(observation => observation.ID == observationID);
     }
 
-    public bool AddComment(string message, int observationID)
+    public async Task<bool> AddComment(string message, int observationID)
     {
-        if (!ObservationExists(observationID)) {
+        if (!await ObservationExists(observationID)) {
             return false;
         }
 
@@ -67,14 +80,15 @@ public class BisonService
             DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         );
 
-        commentDatabase.Store(comment);
+        HttpResponseMessage response = await client.PostAsJsonAsync("comment", comment);
+        response.EnsureSuccessStatusCode();
 
-        return true;
+        return response.IsSuccessStatusCode;
     }
 
-    public IEnumerable<Comment> GetComments(int observationID)
-    {
-        IEnumerable<Comment> comments = commentDatabase.Read();
-        return comments.Where(comment => comment.ObservationID == observationID);
+    public async Task<IEnumerable<Comment>> GetComments(int observationID)
+    {   
+        var comments = await client.GetFromJsonAsync<List<Comment>>("comments");
+        return comments?.Where(comment => comment.ObservationID == observationID) ?? new List<Comment>();
     }
 }

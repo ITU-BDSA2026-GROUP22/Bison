@@ -1,7 +1,9 @@
 using SimpleDB;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<DBFacade>();
 builder.Services.AddSingleton<IDatabaseRepository<Observation>>(new CSVDatabase<Observation>("observations.csv"));
 builder.Services.AddSingleton<IDatabaseRepository<Comment>>(new CSVDatabase<Comment>("comments.csv"));
 builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(new CSVDatabase<Proposal>("proposals.csv"));
@@ -12,8 +14,14 @@ builder.Services.AddSingleton(taxonomy);
 
 var app = builder.Build();
 
+
 // observations
-app.MapGet("/observations", (IDatabaseRepository<Observation> db) => db.Read());
+//old method app.MapGet("/observations", (IDatabaseRepository<Observation> db) => db.Read());
+app.MapGet("/observations", ([FromServices] DBFacade db) => db.GetObservations());
+
+app.MapGet("/observations/{author}", ([FromServices] DBFacade db, string author) =>
+    db.GetObservationsFromAuthor(author));
+
 app.MapPost("/observation", (IDatabaseRepository<Observation> db, NewObservationRequest request) =>
 {
     IEnumerable<Observation> allObservations = db.Read();
@@ -33,7 +41,8 @@ app.MapPost("/observation", (IDatabaseRepository<Observation> db, NewObservation
         newObservationId,
         request.Author,
         request.Message,
-        request.Timestamp
+        request.Timestamp,
+        request.Location
     );
 
     db.Store(newObservation);
@@ -100,10 +109,7 @@ app.MapPost("/proposal", (IDatabaseRepository<Observation> observationDb, IDatab
 
 app.Run();
 
-public record Observation(int ID, string Author, string Message, long Timestamp);
-public record NewObservationRequest(string Author, string Message, long Timestamp);
-public record Comment(int ObservationId, string Author, string Message, long Timestamp);
-public record Proposal(int ObservationId, string Author, string TaxonId, long Timestamp);
+
 
 // Makes Program class public, which allows it to be used for tests
 public partial class Program { }

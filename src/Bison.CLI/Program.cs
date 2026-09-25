@@ -1,13 +1,8 @@
 ﻿using SimpleDB;
 using DocoptNet;
 
-string observationFileName = "bison_observe_cli_db.csv";
-string commentFileName = "bison_comment_cli_db.csv";
 
-IDatabaseRepository<Observation> observationDatabase = new CSVDatabase<Observation>(observationFileName);
-IDatabaseRepository<Comment> commentDatabase = new CSVDatabase<Comment>(commentFileName);
-
-BisonService bisonService = new BisonService(observationDatabase, commentDatabase);
+BisonService bisonService = new BisonService();
 
 
 const string usage = @"Bison CLI.
@@ -22,46 +17,46 @@ var arguments = new Docopt().Apply(usage, args, exit: true)!;
 
 if (arguments["read"].IsTrue) {
     string location = arguments["<location>"].Value?.ToString() ?? "";
-    read_observations(location);
+    await read_observations(location);
 
 } else if (arguments["observe"].IsTrue) {
     string message = arguments["<message>"].ToString();
     string location = arguments["<location>"].Value?.ToString() ?? "";
-    add_observation(message, location);
+    await add_observation(message, location);
 
 } else if (arguments["comment"].IsTrue) {
     string message = arguments["<message>"].ToString();
     if (int.TryParse(arguments["<id>"].ToString(), out int id)) {
-        add_comment(message, id);
+        await add_comment(message, id);
     }
 
 } else if (arguments["discussion"].IsTrue) {
     if (int.TryParse(arguments["<id>"].ToString(), out int id)) {
-        show_discussion(id);
+        await show_discussion(id);
     }
 }
 
-void read_observations(string location)
+async Task read_observations(string location)
 {
-    IEnumerable<Observation> cheeps = bisonService.ReadObservations();
+    IEnumerable<Observation> cheeps;
     
     if (location == "")
     {
-        cheeps = bisonService.ReadObservations();
+        cheeps = await bisonService.ReadObservations();
     } else {
-        cheeps = bisonService.ReadObservationsAt(location);
+        cheeps = await bisonService.ReadObservationsAt(location);
     }
     UserInterface.PrintObservations(cheeps);
 }
 
-void add_observation(string message, string location) {
-    Observation observation = bisonService.AddObservation(message, location);
+async Task add_observation(string message, string location) {
+    Observation observation = await bisonService.AddObservation(message, location);
 
     Console.WriteLine($"Observation with ID: {observation.ID} added.");
 }
 
-void add_comment(string message, int observationID) {
-    bool commentWasAdded = bisonService.AddComment(message, observationID);
+async Task add_comment(string message, int observationID) {
+    bool commentWasAdded = await bisonService.AddComment(message, observationID);
 
     if (commentWasAdded) {
         Console.WriteLine("Comment added.");
@@ -70,15 +65,15 @@ void add_comment(string message, int observationID) {
     }
 }
 
-void show_discussion(int observationID) {
-    bool observationExists = bisonService.ObservationExists(observationID);
+async Task show_discussion(int observationID) {
+    bool observationExists = await bisonService.ObservationExists(observationID);
 
     if (!observationExists) {
         Console.WriteLine($"Observation with ID: {observationID} does not exist.");
         return;
     }
 
-    IEnumerable<Comment> comments = bisonService.GetComments(observationID);
+    IEnumerable<Comment> comments = await bisonService.GetComments(observationID);
 
     UserInterface.PrintComments(comments);
 }

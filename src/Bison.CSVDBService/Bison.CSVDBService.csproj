@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Database\SimpleDB.csproj" />
+    <ProjectReference Include="..\Bison.SQLite\Bison.SQLite.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

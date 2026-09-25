@@ -1,64 +1,85 @@
+using SimpleDB;
+
 public class BisonServiceTests
 {
     [Fact]
-    public void AddComment_ObservationDoesNotExist_ReturnsFalseAndDoesNotStore()
+    public async Task AddObservation_ReturnsCreatedObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        BisonService service = new BisonService();
 
-        bool result = service.AddComment("Test Comment", observationID: 67);
+        Observation result =
+            await service.AddObservation("Test observation", "Copenhagen");
+
+        Assert.NotNull(result);
+        Assert.Equal("Test observation", result.Message);
+    }
+
+    [Fact]
+    public async Task ObservationExists_ReturnsTrueForExistingObservation()
+    {
+        BisonService service = new BisonService();
+
+        Observation observation =
+            await service.AddObservation("Test observation", "Copenhagen");
+
+        bool result =
+            await service.ObservationExists(observation.ID);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task ObservationExists_ReturnsFalseForNonExistingObservation()
+    {
+        BisonService service = new BisonService();
+
+        bool result =
+            await service.ObservationExists(999999);
 
         Assert.False(result);
-        Assert.Empty(comments.Records);
     }
 
     [Fact]
-    public void AddObservation_NoExistingObservations_AssignsID1()
+    public async Task AddComment_ReturnsFalseWhenObservationDoesNotExist()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        BisonService service = new BisonService();
 
-        Observation result = service.AddObservation("first sighting");
+        bool result =
+            await service.AddComment("Test comment", 999999);
 
-        Assert.Equal(1, result.ID);
+        Assert.False(result);
     }
 
     [Fact]
-    public void AddObservation_ExistingObservations_AssignsMaxIDPlusOne()
+    public async Task AddComment_ReturnsTrueForExistingObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        Observation firstExistingObservation = new Observation(1, "Bob", "TestMessage1", 9999999);
-        Observation secondExistingObservation = new Observation(5, "Carl", "TestMessage2", 7);
-        observations.Store(firstExistingObservation);
-        observations.Store(secondExistingObservation);
+        BisonService service = new BisonService();
 
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
-        BisonService service = new BisonService(observations, comments);
+        Observation observation =
+            await service.AddObservation("Test observation", "Copenhagen");
 
-        Observation result = service.AddObservation("new sighting");
+        bool result =
+            await service.AddComment("Test comment", observation.ID);
 
-        Assert.Equal(6, result.ID);
+        Assert.True(result);
     }
 
     [Fact]
-    public void GetComments_ReturnsOnlyCommentsForRequestedObservation()
+    public async Task GetComments_ReturnsCommentsForObservation()
     {
-        TestDatabaseRepository<Observation> observations = new TestDatabaseRepository<Observation>();
-        TestDatabaseRepository<Comment> comments = new TestDatabaseRepository<Comment>();
+        BisonService service = new BisonService();
 
-        Comment firstCommentOnObservationOne = new Comment(1, "Bob", "TestComment1", 420);
-        Comment commentOnObservationTwo = new Comment(2, "Carl", "TestComment2", 69);
-        Comment secondCommentOnObservationOne = new Comment(1, "Daniel", "TestComment3", 4206967);
-        comments.Store(firstCommentOnObservationOne);
-        comments.Store(commentOnObservationTwo);
-        comments.Store(secondCommentOnObservationOne);
+        Observation observation =
+            await service.AddObservation("Test observation", "Copenhagen");
 
-        BisonService service = new BisonService(observations, comments);
+        await service.AddComment("Test comment", observation.ID);
 
-        IEnumerable<Comment> result = service.GetComments(observationID: 1);
+        IEnumerable<Comment> comments =
+            await service.GetComments(observation.ID);
 
-        Assert.Equal(2, result.Count());
+        Assert.Contains(
+            comments,
+            comment => comment.ObservationID == observation.ID
+        );
     }
 }

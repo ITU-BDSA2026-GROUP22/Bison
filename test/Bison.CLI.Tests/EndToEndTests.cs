@@ -1,9 +1,9 @@
 using System.Diagnostics;
+using System.Net.Sockets;
 
 public class EndToEndTests
 {
-    // Tests run from a separate folder, so we need to go to the root of the repo to find the CLI
-    private static string GetCliDllPath()
+    private static string GetRepositoryRoot()
     {
         DirectoryInfo? directory = new DirectoryInfo(AppContext.BaseDirectory);
 
@@ -17,16 +17,66 @@ public class EndToEndTests
             throw new InvalidOperationException("Could not locate repository root from test output directory.");
         }
 
-#if DEBUG
-        string config = "Debug";
-#else
-        string config = "Release";
-#endif
-
-        return Path.Combine(directory.FullName, "src", "Bison.CLI", "bin", config, "net8.0", "Bison.CLI.dll");
+        return directory.FullName;
     }
 
-    private static string RunCli(string workingDirectory, params string[] args)
+#if DEBUG
+    private const string Config = "Debug";
+#else
+    private const string Config = "Release";
+#endif
+
+    private static string GetDllPath(string projectName) =>
+        Path.Combine(GetRepositoryRoot(), "src", projectName, "bin", Config, "net8.0", $"{projectName}.dll");
+
+    private static int GetFreePort()
+    {
+        TcpListener listener = new TcpListener(System.Net.IPAddress.Loopback, 0);
+        listener.Start();
+        int port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
+    }
+
+    private static Process StartService(string workingDirectory, string url)
+    {
+        ProcessStartInfo startInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            WorkingDirectory = workingDirectory,
+            UseShellExecute = false,
+        };
+
+        startInfo.ArgumentList.Add(GetDllPath("Bison.CSVDBService"));
+        startInfo.Environment["ASPNETCORE_URLS"] = url;
+
+        Process process = Process.Start(startInfo)!;
+        WaitUntilReady(url);
+        return process;
+    }
+
+    private static void WaitUntilReady(string url)
+    {
+        using HttpClient client = new() { Timeout = TimeSpan.FromSeconds(1) };
+        DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                client.GetAsync($"{url}/observations").GetAwaiter().GetResult();
+                return;
+            }
+            catch
+            {
+                Thread.Sleep(100);
+            }
+        }
+
+        throw new InvalidOperationException($"Service did not become ready at {url}.");
+    }
+
+    private static string RunCli(string workingDirectory, string serviceUrl, params string[] args)
     {
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
@@ -36,11 +86,13 @@ public class EndToEndTests
             UseShellExecute = false,
         };
 
-        startInfo.ArgumentList.Add(GetCliDllPath());
+        startInfo.ArgumentList.Add(GetDllPath("Bison.CLI"));
         foreach (string arg in args)
         {
             startInfo.ArgumentList.Add(arg);
         }
+
+        startInfo.Environment["BISON_SERVICE_URL"] = serviceUrl;
 
         using Process process = Process.Start(startInfo)!;
         string output = process.StandardOutput.ReadToEnd();
@@ -55,13 +107,18 @@ public class EndToEndTests
         // Tests need to start with empty databases. The CLI saves its CSVs in whichever folder it runs from,
         // so running it in a temp folder makes sure it doesn't mess up our actual databases
         DirectoryInfo tempDirectory = Directory.CreateTempSubdirectory();
+        string url = $"http://localhost:{GetFreePort()}";
+        Process? service = null;
+
         try
         {
             string dbFile = Path.Combine(tempDirectory.FullName, "bison_observe_cli_db.csv");
             SimpleDB.CSVDatabase<Observation> seedDatabase = new SimpleDB.CSVDatabase<Observation>(dbFile);
             seedDatabase.Store(new Observation(1, "Ted", "Who even reads these test messages", 6969));
 
-            string output = RunCli(tempDirectory.FullName, "read");
+            service = StartService(tempDirectory.FullName, url);
+
+            string output = RunCli(tempDirectory.FullName, url, "read");
 
             Assert.Contains("ID: 1", output);
             Assert.Contains("Ted", output);
@@ -69,6 +126,12 @@ public class EndToEndTests
         }
         finally
         {
+            if (service is { HasExited: false })
+            {
+                service.Kill(entireProcessTree: true);
+                service.WaitForExit();
+            }
+            service?.Dispose();
             Directory.Delete(tempDirectory.FullName, recursive: true);
         }
     }
@@ -77,9 +140,14 @@ public class EndToEndTests
     public void Observe_Penguin_StoresObservationInDatabase()
     {
         DirectoryInfo tempDirectory = Directory.CreateTempSubdirectory();
+        string url = $"http://localhost:{GetFreePort()}";
+        Process? service = null;
+
         try
         {
-            RunCli(tempDirectory.FullName, "observe", "Penguin");
+            service = StartService(tempDirectory.FullName, url);
+
+            RunCli(tempDirectory.FullName, url, "observe", "Penguin");
 
             string dbFile = Path.Combine(tempDirectory.FullName, "bison_observe_cli_db.csv");
             SimpleDB.CSVDatabase<Observation> database = new SimpleDB.CSVDatabase<Observation>(dbFile);
@@ -89,6 +157,12 @@ public class EndToEndTests
         }
         finally
         {
+            if (service is { HasExited: false })
+            {
+                service.Kill(entireProcessTree: true);
+                service.WaitForExit();
+            }
+            service?.Dispose();
             Directory.Delete(tempDirectory.FullName, recursive: true);
         }
     }
