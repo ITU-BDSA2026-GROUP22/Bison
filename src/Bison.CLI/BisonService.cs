@@ -7,14 +7,23 @@ public class BisonService
 
     private readonly HttpClient client;
 
-    public BisonService()
-    {
-        client = new HttpClient();
-        client.BaseAddress = new Uri("http://localhost:5257");
+   public BisonService()
+{
+    client = new HttpClient();
 
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    string? baseUrl = Environment.GetEnvironmentVariable("BISON_API_URL");
+
+    if (string.IsNullOrEmpty(baseUrl))
+    {
+        baseUrl = "http://localhost:5257";
     }
+
+    client.BaseAddress = new Uri(baseUrl);
+
+    client.DefaultRequestHeaders.Accept.Clear();
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue("application/json"));
+}
 
     public async Task<IEnumerable<Observation>> ReadObservations()
     {
