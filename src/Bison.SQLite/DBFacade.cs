@@ -8,20 +8,25 @@ public class DBFacade
 
     private readonly string connectionString;
 
-    public DBFacade()
-    {
-        string? databasePath =
-            Environment.GetEnvironmentVariable("BISONDBPATH");
+    public string DatabasePath { get; }
 
-        if (string.IsNullOrEmpty(databasePath))
-        {
-            databasePath = Path.Combine(
-                Path.GetTempPath(),
-                "bison.db"
-            );
+    public DBFacade() : this(GetDatabasePathFromEnvironment()) {
+    }
+
+    //lets the tests use their own database instead of the one from BISONDBPATH
+    public DBFacade(string databasePath) {
+        DatabasePath = databasePath;
+        connectionString = $"Data Source={databasePath}";
+    }
+
+    private static string GetDatabasePathFromEnvironment() {
+        string? databasePath = Environment.GetEnvironmentVariable("BISONDBPATH");
+
+        if (string.IsNullOrEmpty(databasePath)) {
+            databasePath = Path.Combine(Path.GetTempPath(), "bison.db");
         }
 
-        connectionString = $"Data Source={databasePath}";
+        return databasePath;
     }
 
     // Returns one page of observations, newest first. Pages start at 1.

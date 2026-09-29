@@ -6,6 +6,7 @@ namespace Bison.Razor.Tests;
 
 // Test database: 70 observations in total.
 // Alexander wrote 40 of them, Lars wrote 15, Sebastian wrote 10 and Tony wrote 5.
+[Collection(EnvironmentVariableCollection.Name)]
 public class PaginationTests : IDisposable
 {
     private readonly string _databasePath;
