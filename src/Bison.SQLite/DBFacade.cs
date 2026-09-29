@@ -3,6 +3,9 @@ using SimpleDB;
 
 public class DBFacade
 {
+    // Maximum number of observations returned per page
+    public const int PageSize = 32;
+
     private readonly string connectionString;
 
     public DBFacade()
@@ -21,8 +24,14 @@ public class DBFacade
         connectionString = $"Data Source={databasePath}";
     }
 
-    public List<Observation> GetObservations()
+    // Returns one page of observations, newest first. Pages start at 1.
+    public List<Observation> GetObservations(int page = 1)
     {
+        if (page < 1)
+        {
+            page = 1;
+        }
+
         List<Observation> observations = new List<Observation>();
 
         using SqliteConnection connection =
@@ -43,7 +52,13 @@ public class DBFacade
             JOIN user
                 ON observation.author_id = user.user_id
             ORDER BY observation.pub_date DESC
+            LIMIT $limit OFFSET $offset
             """;
+
+        int rowsToSkip = (page - 1) * PageSize;
+
+        command.Parameters.AddWithValue("$limit", PageSize);
+        command.Parameters.AddWithValue("$offset", rowsToSkip);
 
         using SqliteDataReader reader = command.ExecuteReader();
 
@@ -70,8 +85,14 @@ public class DBFacade
         return observations;
     }
 
-    public List<Observation> GetObservationsFromAuthor(string author)
+    // Returns one page of the given author's observations, newest first. Pages start at 1.
+    public List<Observation> GetObservationsFromAuthor(string author, int page = 1)
     {
+        if (page < 1)
+        {
+            page = 1;
+        }
+
         List<Observation> observations = new List<Observation>();
 
         using SqliteConnection connection =
@@ -93,9 +114,14 @@ public class DBFacade
                 ON observation.author_id = user.user_id
             WHERE user.username = $author
             ORDER BY observation.pub_date DESC
+            LIMIT $limit OFFSET $offset
             """;
 
+        int rowsToSkip = (page - 1) * PageSize;
+
         command.Parameters.AddWithValue("$author", author);
+        command.Parameters.AddWithValue("$limit", PageSize);
+        command.Parameters.AddWithValue("$offset", rowsToSkip);
 
         using SqliteDataReader reader = command.ExecuteReader();
 
@@ -120,5 +146,52 @@ public class DBFacade
         }
 
         return observations;
+    }
+
+    public int CountObservations()
+    {
+        using SqliteConnection connection =
+            new SqliteConnection(connectionString);
+
+        connection.Open();
+
+        using SqliteCommand command =
+            connection.CreateCommand();
+
+        command.CommandText = """
+            SELECT COUNT(*)
+            FROM observation
+            """;
+
+        object? result = command.ExecuteScalar();
+        int count = Convert.ToInt32(result);
+
+        return count;
+    }
+
+    public int CountObservationsFromAuthor(string author)
+    {
+        using SqliteConnection connection =
+            new SqliteConnection(connectionString);
+
+        connection.Open();
+
+        using SqliteCommand command =
+            connection.CreateCommand();
+
+        command.CommandText = """
+            SELECT COUNT(*)
+            FROM observation
+            JOIN user
+                ON observation.author_id = user.user_id
+            WHERE user.username = $author
+            """;
+
+        command.Parameters.AddWithValue("$author", author);
+
+        object? result = command.ExecuteScalar();
+        int count = Convert.ToInt32(result);
+
+        return count;
     }
 }
