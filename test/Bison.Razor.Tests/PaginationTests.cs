@@ -5,7 +5,7 @@ using SimpleDB;
 namespace Bison.Razor.Tests;
 
 // Test database: 70 observations in total.
-// Alexander wrote 40 of them, Lars wrote 15, Sebastion wrote 10 and Tony wrote 5.
+// Alexander wrote 40 of them, Lars wrote 15, Sebastian wrote 10 and Tony wrote 5.
 public class PaginationTests : IDisposable
 {
     private readonly string _databasePath;
@@ -49,7 +49,7 @@ public class PaginationTests : IDisposable
             );
             INSERT INTO user VALUES (1, 'Alexander', 'alexander@example.com');
             INSERT INTO user VALUES (2, 'Lars', 'lars@example.com');
-            INSERT INTO user VALUES (3, 'Sebastion', 'sebastion@example.com');
+            INSERT INTO user VALUES (3, 'Sebastian', 'sebastian@example.com');
             INSERT INTO user VALUES (4, 'Tony', 'tony@example.com');
             """;
         createTables.ExecuteNonQuery();
