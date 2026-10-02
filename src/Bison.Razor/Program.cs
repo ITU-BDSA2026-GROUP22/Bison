@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AddPageRoute("/Public", "obs");
+    options.Conventions.AddPageRoute("/Public", "ob");
     options.Conventions.AddPageRoute("/UserTimeline", "obs/{author}");
 });
 builder.Services.AddSingleton<DBFacade>();
