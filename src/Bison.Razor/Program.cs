@@ -1,13 +1,28 @@
+using SimpleDB;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AddPageRoute("/Public", "obs");
+    options.Conventions.AddPageRoute("/Public", "ob");
     options.Conventions.AddPageRoute("/UserTimeline", "obs/{author}");
 });
 builder.Services.AddSingleton<DBFacade>();
 builder.Services.AddSingleton<IObservationService, ObservationService>();
+
+string dataFolder = Path.GetFullPath(
+    Path.Combine(builder.Environment.ContentRootPath, "../Bison.CSVDBService")
+);
+
+builder.Services.AddSingleton<IDatabaseRepository<Comment>>(
+    new CSVDatabase<Comment>(Path.Combine(dataFolder, "comments.csv"))
+);
+
+builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(
+    new CSVDatabase<Proposal>(Path.Combine(dataFolder, "proposals.csv"))
+);
 
 
 var app = builder.Build();

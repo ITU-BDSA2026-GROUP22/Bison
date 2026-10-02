@@ -153,6 +153,43 @@ public class DBFacade
         return observations;
     }
 
+    public Observation? GetObservation(int id)
+    {
+        using SqliteConnection connection = new SqliteConnection(connectionString);
+        connection.Open();
+
+        using SqliteCommand command = connection.CreateCommand();
+
+        command.CommandText =
+            "SELECT observation.observation_id, user.username, observation.text, observation.pub_date " +
+            "FROM observation " +
+            "JOIN user ON observation.author_id = user.user_id " +
+            "WHERE observation.observation_id = $id";
+
+        command.Parameters.AddWithValue("$id", id);
+
+        using SqliteDataReader reader = command.ExecuteReader();
+
+        if (reader.Read())
+        {
+            int observationId = reader.GetInt32(0);
+            string author = reader.GetString(1);
+            string message = reader.GetString(2);
+            long timestamp = reader.GetInt64(3);
+
+            Observation observation = new Observation(
+                observationId,
+                author,
+                message,
+                timestamp
+            );
+
+            return observation;
+        }
+
+        return null;
+    }
+    
     public int CountObservations()
     {
         using SqliteConnection connection =

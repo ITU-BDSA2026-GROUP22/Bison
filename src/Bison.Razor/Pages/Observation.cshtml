@@ -1,0 +1,46 @@
+﻿@page "/ob/{id:int}"
+@model Bison.Razor.Pages.ObservationModel
+
+<h3>Proposals</h3>
+
+@if (Model.Proposals.Count == 0)
+{
+    <p>No proposals yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var proposal in Model.Proposals)
+        {
+            <li>
+                <strong>@proposal.Author</strong>
+                proposed taxon @proposal.TaxonId
+                <small>
+                    — @Model.FormatDate(proposal.Timestamp) UTC
+                </small>
+            </li>
+        }
+    </ul>
+}
+
+<h3>Comments</h3>
+
+@if (Model.Comments.Count == 0)
+{
+    <p>No comments yet.</p>
+}
+else
+{
+    <ul>
+        @foreach (var comment in Model.Comments)
+        {
+            <li>
+                <strong>@comment.Author:</strong>
+                @comment.Message
+                <small>
+                    — @Model.FormatDate(comment.Timestamp) UTC
+                </small>
+            </li>
+        }
+    </ul>
+}
