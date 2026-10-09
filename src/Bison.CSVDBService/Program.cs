@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<DBFacade>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddSingleton<IDatabaseRepository<Observation>>(new CSVDatabase<Observation>("observations.csv"));
 builder.Services.AddSingleton<IDatabaseRepository<Comment>>(new CSVDatabase<Comment>("comments.csv"));
 builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(new CSVDatabase<Proposal>("proposals.csv"));
@@ -17,10 +17,9 @@ var app = builder.Build();
 
 // observations
 //old method app.MapGet("/observations", (IDatabaseRepository<Observation> db) => db.Read());
-app.MapGet("/observations", ([FromServices] DBFacade db) => db.GetObservations());
+app.MapGet("/observations",([FromServices] IPostRepository db) => db.GetObservations());
 
-app.MapGet("/observations/{author}", ([FromServices] DBFacade db, string author) =>
-    db.GetObservationsFromAuthor(author));
+app.MapGet("/observations/{author}",([FromServices] IPostRepository db, string author) => db.GetObservationsFromAuthor(author));
 
 app.MapPost("/observation", (IDatabaseRepository<Observation> db, NewObservationRequest request) =>
 {

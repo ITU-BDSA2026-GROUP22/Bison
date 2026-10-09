@@ -39,7 +39,7 @@ public static class TestDatabase {
     }
 
     private static string ReadSchema() {
-        using Stream? stream = typeof(DBFacade).Assembly
+        using Stream? stream = typeof(PostRepository).Assembly
             .GetManifestResourceStream("Bison.SQLite.data.schema.sql");
 
         if (stream == null) {

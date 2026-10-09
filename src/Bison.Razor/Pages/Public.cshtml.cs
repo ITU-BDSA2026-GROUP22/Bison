@@ -26,7 +26,7 @@ public class PublicModel : PageModel
         Observations = _service.GetObservations(page);
 
         int totalObservations = _service.CountObservations();
-        int observationsShownSoFar = CurrentPage * DBFacade.PageSize;
+        int observationsShownSoFar = CurrentPage * _service.PageSize;
         HasNextPage = observationsShownSoFar < totalObservations;
 
         return Page();

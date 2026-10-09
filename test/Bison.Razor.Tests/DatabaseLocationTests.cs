@@ -19,7 +19,7 @@ public class DatabaseLocationTests : IDisposable {
     public void DatabasePath_ComesFromBISONDBPATH_WhenItIsSet() {
         Environment.SetEnvironmentVariable("BISONDBPATH", "./mybison.db");
 
-        DBFacade db = new DBFacade();
+        PostRepository db = new PostRepository();
 
         Assert.Equal("./mybison.db", db.DatabasePath);
     }
@@ -28,7 +28,7 @@ public class DatabaseLocationTests : IDisposable {
     public void DatabasePath_IsBisonDbInTempDirectory_WhenBISONDBPATHIsNotSet() {
         Environment.SetEnvironmentVariable("BISONDBPATH", null);
 
-        DBFacade db = new DBFacade();
+        PostRepository db = new PostRepository();
 
         Assert.Equal(Path.Combine(Path.GetTempPath(), "bison.db"), db.DatabasePath);
     }

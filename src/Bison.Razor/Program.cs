@@ -9,8 +9,8 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AddPageRoute("/Public", "ob");
     options.Conventions.AddPageRoute("/UserTimeline", "obs/{author}");
 });
-builder.Services.AddSingleton<DBFacade>();
-builder.Services.AddSingleton<IObservationService, ObservationService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IObservationService, ObservationService>();
 
 string dataFolder = Path.GetFullPath(
     Path.Combine(builder.Environment.ContentRootPath, "../Bison.CSVDBService")

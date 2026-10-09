@@ -2,13 +2,13 @@ using SimpleDB;
 
 namespace Bison.Razor.Tests;
 
-public class DBFacadeTests : IDisposable {
+public class PostRepositoryTests : IDisposable {
     private readonly string _databasePath;
-    private readonly DBFacade _db;
+    private readonly IPostRepository _db;
 
-    public DBFacadeTests() {
+    public PostRepositoryTests() {
         _databasePath = TestDatabase.CreateExampleDatabase();
-        _db = new DBFacade(_databasePath);
+        _db = new PostRepository(_databasePath);
     }
 
     public void Dispose() {
