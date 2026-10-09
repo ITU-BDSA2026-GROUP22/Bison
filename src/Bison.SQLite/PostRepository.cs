@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
 using SimpleDB;
 
-public class DBFacade
+public class PostRepository : IPostRepository
 {
     // Maximum number of observations returned per page
     public const int PageSize = 32;
