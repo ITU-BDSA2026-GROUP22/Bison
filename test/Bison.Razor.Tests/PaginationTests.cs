@@ -10,7 +10,7 @@ namespace Bison.Razor.Tests;
 public class PaginationTests : IDisposable
 {
     private readonly string _databasePath;
-    private readonly DBFacade _db;
+    private readonly IPostRepository _db;
 
     public PaginationTests()
     {
@@ -20,7 +20,7 @@ public class PaginationTests : IDisposable
         CreateTestDatabase(_databasePath);
 
         Environment.SetEnvironmentVariable("BISONDBPATH", _databasePath);
-        _db = new DBFacade();
+        _db = new PostRepository(_databasePath);
     }
 
     public void Dispose()

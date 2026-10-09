@@ -26,7 +26,7 @@ public class UserTimelineModel : PageModel
         Observations = _service.GetObservationsFromAuthor(author, page);
 
         int totalObservations = _service.CountObservationsFromAuthor(author);
-        int observationsShownSoFar = CurrentPage * DBFacade.PageSize;
+        int observationsShownSoFar = CurrentPage * _service.PageSize;
         HasNextPage = observationsShownSoFar < totalObservations;
 
         return Page();

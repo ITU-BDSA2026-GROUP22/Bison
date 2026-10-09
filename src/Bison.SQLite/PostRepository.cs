@@ -3,18 +3,21 @@ using SimpleDB;
 
 public class PostRepository : IPostRepository
 {
-    // Maximum number of observations returned per page
-    public const int PageSize = 32;
+    public int PageSize { get; } = 32;
 
     private readonly string connectionString;
 
     public string DatabasePath { get; }
 
-    public DBFacade() : this(GetDatabasePathFromEnvironment()) {
-    }
 
+   
+    public PostRepository() : this(GetDatabasePathFromEnvironment())
+    {
+
+    }
     //lets the tests use their own database instead of the one from BISONDBPATH
-    public DBFacade(string databasePath) {
+    public PostRepository(string databasePath)
+    {
         DatabasePath = databasePath;
         connectionString = $"Data Source={databasePath}";
     }

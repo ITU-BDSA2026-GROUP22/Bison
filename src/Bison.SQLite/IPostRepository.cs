@@ -4,13 +4,13 @@ public interface IPostRepository
 {
     int PageSize { get; }
 
-    List<Observation> GetObservations(int page = 1 );
+    List<Observation> GetObservations(int page = 1);
 
     List<Observation> GetObservationsFromAuthor(string author, int page = 1);
 
-    Observation? GetObservation(int observationID);
+    Observation? GetObservation(int id);
 
-    int countObservations();
+    int CountObservations();
 
-    int countObservationsFromAuthor(string author);
+    int CountObservationsFromAuthor(string author);
 }

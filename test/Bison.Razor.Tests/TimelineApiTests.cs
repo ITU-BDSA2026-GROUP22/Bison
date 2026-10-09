@@ -12,7 +12,8 @@ public class ExampleDatabaseFactory : WebApplicationFactory<Program> {
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
-            services.AddSingleton(new DBFacade(DatabasePath));
+            services.AddScoped<IPostRepository>(
+            provider => new PostRepository(DatabasePath));
         });
     }
 

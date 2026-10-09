@@ -8,7 +8,7 @@ public class ObservationServiceTests : IDisposable {
 
     public ObservationServiceTests() {
         _databasePath = TestDatabase.CreateExampleDatabase();
-        _service = new ObservationService(new DBFacade(_databasePath));
+        _service = new ObservationService(new PostRepository(_databasePath));
     }
 
     public void Dispose() {

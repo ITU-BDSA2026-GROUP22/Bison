@@ -6,7 +6,7 @@ namespace Bison.Razor.Pages;
 
 public class ObservationModel : PageModel
 {
-    private readonly DBFacade database;
+    private readonly IPostRepository  database;
     private readonly IDatabaseRepository<Comment> commentDatabase;
     private readonly IDatabaseRepository<Proposal> proposalDatabase;
 
@@ -16,7 +16,7 @@ public class ObservationModel : PageModel
     public List<Proposal> Proposals { get; set; } = new List<Proposal>();
 
     public ObservationModel(
-        DBFacade database,
+        IPostRepository database,
         IDatabaseRepository<Comment> commentDatabase,
         IDatabaseRepository<Proposal> proposalDatabase)
     {
