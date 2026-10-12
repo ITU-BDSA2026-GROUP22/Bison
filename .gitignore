@@ -1,2 +1,5 @@
 bin/
 obj/
+
+# SQLite database created by Bison.Razor on startup
+src/Bison.Razor/bison.db

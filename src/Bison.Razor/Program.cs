@@ -1,3 +1,5 @@
+using Bison.Razor.Data;
+using Microsoft.EntityFrameworkCore;
 using SimpleDB;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +26,21 @@ builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(
     new CSVDatabase<Proposal>(Path.Combine(dataFolder, "proposals.csv"))
 );
 
+string databasePath = Path.Combine(builder.Environment.ContentRootPath, "bison.db");
+
+builder.Services.AddDbContext<BisonDBContext>(options =>
+    options.UseSqlite($"Data Source={databasePath}")
+);
 
 var app = builder.Build();
+
+// Create the database if it does not exist, and seed it with the example data.
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    BisonDBContext context = scope.ServiceProvider.GetRequiredService<BisonDBContext>();
+    context.Database.EnsureCreated();
+    DbInitializer.SeedDatabase(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
