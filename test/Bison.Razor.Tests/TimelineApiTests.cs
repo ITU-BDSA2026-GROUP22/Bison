@@ -9,17 +9,21 @@ namespace Bison.Razor.Tests;
 //starts the app with its own test database. The DBFacade gets replaced directly, so these tests dont use BISONDBPATH
 public class ExampleDatabaseFactory : WebApplicationFactory<Program> {
     public string DatabasePath { get; } = TestDatabase.CreateExampleDatabase();
+    public string EFDatabasePath { get; } = EFTestDatabase.CreatePath();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
             services.AddScoped<IPostRepository>(
             provider => new PostRepository(DatabasePath));
+
+            EFTestDatabase.UseDatabase(services, EFDatabasePath);
         });
     }
 
     protected override void Dispose(bool disposing) {
         base.Dispose(disposing);
         TestDatabase.Delete(DatabasePath);
+        TestDatabase.Delete(EFDatabasePath);
     }
 }
 

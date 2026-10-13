@@ -153,7 +153,7 @@ public class PaginationTests : IDisposable
     [InlineData("/obs/Lars", false)]
     public async Task NextLink_IsOnlyShownWhenThereIsANextPage(string url, bool expectNextLink)
     {
-        using WebApplicationFactory<Program> factory = new WebApplicationFactory<Program>();
+        using OwnDatabaseFactory factory = new OwnDatabaseFactory();
         using HttpClient client = factory.CreateClient();
 
         string html = await client.GetStringAsync(url);
@@ -174,7 +174,7 @@ public class PaginationTests : IDisposable
     [InlineData("/obs?page=1")]
     public async Task PublicTimeline_WithoutPageOrWithPage1_ShowsTheSameFirstPage(string url)
     {
-        using WebApplicationFactory<Program> factory = new WebApplicationFactory<Program>();
+        using OwnDatabaseFactory factory = new OwnDatabaseFactory();
         using HttpClient client = factory.CreateClient();
 
         string html = await client.GetStringAsync(url);
