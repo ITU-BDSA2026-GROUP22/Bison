@@ -12,4 +12,21 @@ public class Taxon
     public Taxon? Parent { get; set; }
 
     public List<Taxon> Children { get; set; } = new List<Taxon>();
+
+    public bool IsSubTaxon(Taxon ancestor)
+    {
+        Taxon? current = this;
+
+        while (current != null)
+        {
+            if (current.TaxonId == ancestor.TaxonId)
+            {
+                return true;
+            }
+
+            current = current.Parent;
+        }
+
+        return false;
+    }
 }

@@ -27,10 +27,12 @@ builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(
 );
 
 string databasePath = Path.Combine(builder.Environment.ContentRootPath, "bison.db");
+string connectionString = "Data Source=" + databasePath;
 
 builder.Services.AddDbContext<BisonDBContext>(options =>
-    options.UseSqlite($"Data Source={databasePath}")
-);
+{
+    options.UseSqlite(connectionString);
+});
 
 var app = builder.Build();
 
