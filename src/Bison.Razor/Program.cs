@@ -1,6 +1,7 @@
 using Bison.Razor.Data;
 using Microsoft.EntityFrameworkCore;
 using SimpleDB;
+using Bison.Razor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddRazorPages(options =>
 });
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IObservationService, ObservationService>();
+builder.Services.AddScoped<ITaxonFilterService, TaxonFilterService>();
 
 string dataFolder = Path.GetFullPath(
     Path.Combine(builder.Environment.ContentRootPath, "../Bison.CSVDBService")
