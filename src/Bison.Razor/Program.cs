@@ -1,4 +1,5 @@
 using Bison.Razor.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SimpleDB;
 using Bison.Razor;
@@ -36,6 +37,17 @@ builder.Services.AddDbContext<BisonDBContext>(options =>
     options.UseSqlite(connectionString);
 });
 
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+.AddEntityFrameworkStores<BisonDBContext>();
+
 var app = builder.Build();
 
 // Create the database if it does not exist, and seed it with the example data.
@@ -44,6 +56,9 @@ using (IServiceScope scope = app.Services.CreateScope())
     BisonDBContext context = scope.ServiceProvider.GetRequiredService<BisonDBContext>();
     context.Database.EnsureCreated();
     DbInitializer.SeedDatabase(context);
+
+    UserManager<IdentityUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    await IdentitySeeder.SeedUsersAsync(userManager);
 }
 
 // Configure the HTTP request pipeline.
@@ -58,6 +73,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 

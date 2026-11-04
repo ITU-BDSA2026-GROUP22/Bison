@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SimpleDB;
+using Bison.Razor.DTOs;
 
 namespace Bison.Razor.Pages;
 
@@ -10,10 +11,9 @@ public class ObservationModel : PageModel
     private readonly IDatabaseRepository<Comment> commentDatabase;
     private readonly IDatabaseRepository<Proposal> proposalDatabase;
 
-    public Observation? Observation { get; set; }
-
-    public List<Comment> Comments { get; set; } = new List<Comment>();
-    public List<Proposal> Proposals { get; set; } = new List<Proposal>();
+    public ObservationDTO? Observation { get; set; }
+    public List<CommentDTO> Comments { get; set; } = new();
+    public List<ProposalDTO> Proposals { get; set; } = new();
 
     public ObservationModel(
         IPostRepository database,
@@ -26,32 +26,50 @@ public class ObservationModel : PageModel
     }
 
     public IActionResult OnGet(int id)
+{
+    Observation? observation = database.GetObservation(id);
+
+    if (observation == null)
     {
-        Observation = database.GetObservation(id);
-
-        if (Observation == null)
-        {
-            return NotFound();
-        }
-
-        foreach (Comment comment in commentDatabase.Read())
-        {
-            if (comment.ObservationId == id)
-            {
-                Comments.Add(comment);
-            }
-        }
-
-        foreach (Proposal proposal in proposalDatabase.Read())
-        {
-            if (proposal.ObservationId == id)
-            {
-                Proposals.Add(proposal);
-            }
-        }
-
-        return Page();
+        return NotFound();
     }
+
+    Observation = new ObservationDTO
+    {
+        ID = observation.ID,
+        Username = observation.Author,
+        Text = observation.Message,
+        PubDate = observation.Timestamp
+    };
+
+    foreach (Comment comment in commentDatabase.Read())
+    {
+        if (comment.ObservationId == id)
+        {
+            Comments.Add(new CommentDTO
+            {
+                Author = comment.Author,
+                Message = comment.Message,
+                Timestamp = comment.Timestamp
+            });
+        }
+    }
+
+    foreach (Proposal proposal in proposalDatabase.Read())
+    {
+        if (proposal.ObservationId == id)
+        {
+            Proposals.Add(new ProposalDTO
+            {
+                Author = proposal.Author,
+                TaxonId = proposal.TaxonId,
+                Timestamp = proposal.Timestamp
+            });
+        }
+    }
+
+    return Page();
+}
 
     public string FormatDate(long timestamp)
     {

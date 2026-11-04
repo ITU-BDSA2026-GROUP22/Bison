@@ -1,9 +1,11 @@
 using Bison.Razor.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bison.Razor.Data;
 
-public class BisonDBContext : DbContext
+public class BisonDBContext : IdentityDbContext<IdentityUser>
 {
     public DbSet<Author> Authors { get; set; }
     public DbSet<Taxon> Taxons { get; set; }
@@ -21,6 +23,8 @@ public class BisonDBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         // A taxon has one parent (or none) and many children.
         modelBuilder.Entity<Taxon>()
             .HasOne(taxon => taxon.Parent)

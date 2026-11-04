@@ -9,9 +9,9 @@ public static class TestDatabase {
     public const string EduardsObservation = "Two swans at Peblinge Lake";
 
     private const string ExampleData = """
-        INSERT INTO user VALUES(1,'Peter','peter@itu.dk');
-        INSERT INTO user VALUES(2,'Petra','petra@itu.dk');
-        INSERT INTO user VALUES(3,'Eduard','edka@itu.dk');
+         INSERT INTO user VALUES(1,'Peter','peter@itu.dk','test-hash');
+        INSERT INTO user VALUES(2,'Petra','petra@itu.dk','test-hash');
+        INSERT INTO user VALUES(3,'Eduard','edka@itu.dk','test-hash');
 
         INSERT INTO observation VALUES(1,2,'A heron',1690892208);
         INSERT INTO observation VALUES(2,1,'A big gray bird in a pond at DR byen',1690895308);
