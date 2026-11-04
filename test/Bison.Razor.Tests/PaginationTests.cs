@@ -154,6 +154,8 @@ public class PaginationTests : IDisposable
     public async Task NextLink_IsOnlyShownWhenThereIsANextPage(string url, bool expectNextLink)
     {
         using OwnDatabaseFactory factory = new OwnDatabaseFactory();
+
+        factory.SeedPaginationData();
         using HttpClient client = factory.CreateClient();
 
         string html = await client.GetStringAsync(url);
@@ -175,6 +177,8 @@ public class PaginationTests : IDisposable
     public async Task PublicTimeline_WithoutPageOrWithPage1_ShowsTheSameFirstPage(string url)
     {
         using OwnDatabaseFactory factory = new OwnDatabaseFactory();
+
+        factory.SeedPaginationData();
         using HttpClient client = factory.CreateClient();
 
         string html = await client.GetStringAsync(url);

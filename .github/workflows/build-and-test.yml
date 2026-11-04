@@ -17,6 +17,17 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Setup Dafny
+        uses: dafny-lang/setup-dafny-action@v1
+        with:
+          dafny-version: "4.11.0"
+
+      - name: Verify and generate Dafny code
+        run: |
+          dafny translate cs src/Bison.Dafny/TaxonFilter.dfy \
+            --include-runtime false \
+            --output src/Bison.Razor/Verified/TaxonFilter.cs
+
       - name: Restore dependencies
         run: dotnet restore Bison.sln
 

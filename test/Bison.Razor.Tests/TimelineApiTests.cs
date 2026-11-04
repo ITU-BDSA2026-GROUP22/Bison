@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
+using Bison.Razor.Data;
+using Bison.Razor.Models;
+
 namespace Bison.Razor.Tests;
 
 //starts the app with its own test database. The DBFacade gets replaced directly, so these tests dont use BISONDBPATH
@@ -25,12 +28,77 @@ public class ExampleDatabaseFactory : WebApplicationFactory<Program> {
         TestDatabase.Delete(DatabasePath);
         TestDatabase.Delete(EFDatabasePath);
     }
+
+        public void SeedExampleEFDatabase()
+    {
+        using IServiceScope scope = Services.CreateScope();
+
+        BisonDBContext db =
+            scope.ServiceProvider.GetRequiredService<BisonDBContext>();
+
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+
+        Author peter = new()
+        {
+            Name = "Peter",
+            Email = "peter@example.com"
+        };
+
+        Author petra = new()
+        {
+            Name = "Petra",
+            Email = "petra@example.com"
+        };
+
+        Author eduard = new()
+        {
+            Name = "Eduard",
+            Email = "eduard@example.com"
+        };
+
+        Taxon taxon = new()
+        {
+            dwc_TaxonID = "test-taxon",
+            VernacularName = "Test"
+        };
+
+        db.Authors.AddRange(peter, petra, eduard);
+        db.Taxons.Add(taxon);
+        db.SaveChanges();
+
+        db.Observations.AddRange(
+            new Observation
+            {
+                Author = peter,
+                Taxon = taxon,
+                Text = TestDatabase.PetersObservation,
+                TimeStamp = DateTime.UtcNow
+            },
+            new Observation
+            {
+                Author = petra,
+                Taxon = taxon,
+                Text = TestDatabase.PetrasObservation,
+                TimeStamp = DateTime.UtcNow.AddSeconds(1)
+            },
+            new Observation
+            {
+                Author = eduard,
+                Taxon = taxon,
+                Text = TestDatabase.EduardsObservation,
+                TimeStamp = DateTime.UtcNow.AddSeconds(2)
+            });
+
+        db.SaveChanges();
+    }
 }
 
 public class TimelineApiTests : IClassFixture<ExampleDatabaseFactory> {
     private readonly HttpClient _client;
 
     public TimelineApiTests(ExampleDatabaseFactory factory) {
+        factory.SeedExampleEFDatabase();
         _client = factory.CreateClient();
     }
 
