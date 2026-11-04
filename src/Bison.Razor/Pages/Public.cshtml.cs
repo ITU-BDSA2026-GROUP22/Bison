@@ -54,7 +54,6 @@ public class PublicModel : PageModel
     }
 
     int totalObservations = observations.Count;
-
     int observationsToSkip = (page - 1) * _service.PageSize;
 
     observations = observations
