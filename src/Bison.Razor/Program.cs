@@ -48,6 +48,14 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 .AddEntityFrameworkStores<BisonDBContext>();
 
+builder.Services.AddAuthentication().AddGitHub(options => 
+{
+    options.ClientId = builder.Configuration["authentication:github:clientId"] ?? "";
+    options.ClientSecret = builder.Configuration["authentication:github:clientSecret"] ?? "";
+    options.CallbackPath = "/signin-github";
+    options.Scope.Add("user:email");
+});
+
 var app = builder.Build();
 
 // Create the database if it does not exist, and seed it with the example data.
