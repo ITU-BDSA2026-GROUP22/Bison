@@ -1,79 +1,175 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SimpleDB;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using Bison.Razor.Data;
 using Bison.Razor.DTOs;
+using Bison.Razor.Models;
 
 namespace Bison.Razor.Pages;
 
 public class ObservationModel : PageModel
 {
-    private readonly IPostRepository  database;
-    private readonly IDatabaseRepository<Comment> commentDatabase;
-    private readonly IDatabaseRepository<Proposal> proposalDatabase;
+    private readonly BisonDBContext _db;
 
-    public ObservationDTO? Observation { get; set; }
+    [BindProperty]
+    [StringLength(500)]
+    public string CommentText { get; set; } = "";
     public List<CommentDTO> Comments { get; set; } = new();
+
+    [BindProperty]
+    public int ProposalTaxonId { get; set; }
+    public List<Taxon> Taxons { get; set; } = new();
     public List<ProposalDTO> Proposals { get; set; } = new();
 
-    public ObservationModel(
-        IPostRepository database,
-        IDatabaseRepository<Comment> commentDatabase,
-        IDatabaseRepository<Proposal> proposalDatabase)
+    public ObservationDTO? Observation { get; set; }
+    public ObservationModel(BisonDBContext db)
     {
-        this.database = database;
-        this.commentDatabase = commentDatabase;
-        this.proposalDatabase = proposalDatabase;
+        _db = db;
     }
 
-    public IActionResult OnGet(int id)
-{
-    Observation? observation = database.GetObservation(id);
-
-    if (observation == null)
+    public async Task<IActionResult> OnGetAsync(int id)
     {
-        return NotFound();
-    }
+        var observation = await _db.Observations
+            .Include(o => o.Author)
+            .Include(o => o.Comments)
+                .ThenInclude(c => c.Author)
+            .Include(o => o.Proposals)
+                .ThenInclude(p => p.Author)
+            .FirstOrDefaultAsync(o => o.PostId == id);
 
-    Observation = new ObservationDTO
-    {
-        ID = observation.ID,
-        Username = observation.Author,
-        Text = observation.Message,
-        PubDate = observation.Timestamp
-    };
-
-    foreach (Comment comment in commentDatabase.Read())
-    {
-        if (comment.ObservationId == id)
+        if (observation == null)
         {
-            Comments.Add(new CommentDTO
-            {
-                Author = comment.Author,
-                Message = comment.Message,
-                Timestamp = comment.Timestamp
-            });
+            return NotFound();
         }
-    }
 
-    foreach (Proposal proposal in proposalDatabase.Read())
-    {
-        if (proposal.ObservationId == id)
+        Observation = new ObservationDTO
         {
-            Proposals.Add(new ProposalDTO
-            {
-                Author = proposal.Author,
-                TaxonId = proposal.TaxonId,
-                Timestamp = proposal.Timestamp
-            });
-        }
-    }
+            ID = observation.PostId,
+            Username = observation.Author.Name,
+            Text = observation.Text,
+            PubDate = new DateTimeOffset(observation.TimeStamp).ToUnixTimeSeconds()
+        };
 
-    return Page();
-}
+        Comments = observation.Comments.Select(comment => new CommentDTO
+        {
+            Author = comment.Author.Name,
+            Message = comment.Text,
+            Timestamp = new DateTimeOffset(comment.TimeStamp).ToUnixTimeSeconds()
+        }).ToList();
+
+        Proposals = observation.Proposals.Select(proposal => new ProposalDTO
+        {
+            Author = proposal.Author.Name,
+            TaxonId = proposal.TaxonId.ToString(),
+            Timestamp = new DateTimeOffset(proposal.TimeStamp).ToUnixTimeSeconds()
+        }).ToList();
+
+        Taxons = await _db.Taxons
+        .Where(t => !string.IsNullOrWhiteSpace(t.VernacularName))
+        .OrderBy(t => t.VernacularName)
+        .ToListAsync();
+
+        return Page();
+    }
 
     public string FormatDate(long timestamp)
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(timestamp);
         return date.UtcDateTime.ToString("dd/MM/yyyy HH:mm");
     }
+
+    public async Task<IActionResult> OnPostAsync(int id)
+    {
+        if (string.IsNullOrWhiteSpace(CommentText))
+        {
+            ModelState.AddModelError(nameof(CommentText), "A comment is required.");
+            return await OnGetAsync(id);
+        }
+
+        if (User.Identity?.Name == null)
+        {
+            return Unauthorized();
+        }
+
+        Author? author = await _db.Authors.FirstOrDefaultAsync(a => a.Email == User.Identity.Name);
+
+        if (author == null)
+        {
+            return Unauthorized();
+        }
+
+        Observation? observation = await _db.Observations.FirstOrDefaultAsync(o => o.PostId == id);
+
+        if (observation == null)
+        {
+            return NotFound();
+        }
+
+        Comment comment = new Comment
+        {
+            AuthorId = author.AuthorId,
+            ObservationId  = observation.PostId,
+            Text = CommentText,
+            TimeStamp = DateTime.UtcNow
+        };
+
+        _db.Comments.Add(comment);
+        await _db.SaveChangesAsync();
+
+        return RedirectToPage("/Observation", new { id });
+    }
+
+    public async Task<IActionResult> OnPostProposalAsync(int id)
+    {
+        if (ProposalTaxonId <= 0)
+        {
+            ModelState.AddModelError(nameof(ProposalTaxonId), "Please select a taxon.");
+            return await OnGetAsync(id);
+        }
+
+        if (User.Identity?.Name == null)
+        {
+            return Unauthorized();
+        }
+
+        Author? author = await _db.Authors
+            .FirstOrDefaultAsync(a => a.Email == User.Identity.Name);
+
+        if (author == null)
+        {
+            return Unauthorized();
+        }
+
+        Observation? observation = await _db.Observations
+            .FirstOrDefaultAsync(o => o.PostId == id);
+
+        if (observation == null)
+        {
+            return NotFound();
+        }
+
+        Taxon? taxon = await _db.Taxons
+            .FirstOrDefaultAsync(t => t.TaxonId == ProposalTaxonId);
+
+        if (taxon == null || string.IsNullOrWhiteSpace(taxon.VernacularName))
+        {
+            return BadRequest();
+        }
+
+        Proposal proposal = new Proposal
+        {
+            AuthorId = author.AuthorId,
+            ObservationId = observation.PostId,
+            TaxonId = taxon.TaxonId,
+            TimeStamp = DateTime.UtcNow
+        };
+
+        _db.Proposals.Add(proposal);
+        await _db.SaveChangesAsync();
+
+        return RedirectToPage("/Observation", new { id });
+    }
+
 }

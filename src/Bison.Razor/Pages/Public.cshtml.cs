@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using Bison.Razor.Data;
 using Bison.Razor.Models;
 
@@ -8,6 +9,14 @@ namespace Bison.Razor.Pages;
 
 public class PublicModel : PageModel
 {
+
+    [BindProperty]
+    [Required]
+    [StringLength(500)] // Limit the observation text to 500 characters
+    public string ObservationText { get; set; } = "";
+    [BindProperty]
+    public int TaxonId { get; set; }
+    public List<Taxon> Taxons { get; set; } = new();
     private readonly IObservationService _service;
     private readonly BisonDBContext _db;
     private readonly ITaxonFilterService _taxonFilterService;
@@ -20,9 +29,10 @@ public class PublicModel : PageModel
         _service = service;
         _db = db;
         _taxonFilterService = taxonFilterService;
+
     }
 
-    public ActionResult OnGet([FromQuery] int page = 1, [FromQuery] int? taxon = null)
+    public async Task<IActionResult> OnGet([FromQuery] int page = 1, [FromQuery] int? taxon = null)
 {
     if (page < 1)
     {
@@ -64,6 +74,7 @@ public class PublicModel : PageModel
 
     Observations = observations
         .Select(o => new ObservationViewModel(
+            o.PostId,
             o.Author.Name,
             o.Text,
             o.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
@@ -74,6 +85,53 @@ public class PublicModel : PageModel
 
     HasNextPage = observationsShownSoFar < totalObservations;
 
+    Taxons = await _db.Taxons.Where(t => !string.IsNullOrWhiteSpace(t.VernacularName)).OrderBy(t => t.VernacularName).ToListAsync();
+
     return Page();
+}
+
+public async Task<IActionResult> OnPostAsync()
+{
+    // Prevent empty observations from being submitted and can't be more than set limit
+    if (!ModelState.IsValid)
+{
+    Taxons = await _db.Taxons.Where(t => !string.IsNullOrWhiteSpace(t.VernacularName)).OrderBy(t => t.VernacularName).ToListAsync();
+}
+
+    // Check that the user is logged in
+    if (User.Identity?.Name == null)
+    {
+        return Unauthorized();
+    }
+
+    // Find the author
+    Author? author = await _db.Authors .FirstOrDefaultAsync(a => a.Email == User.Identity.Name);
+
+    if (author == null)
+    {
+        return Unauthorized();
+    }
+
+    // Find the selected taxon
+    Taxon? taxon = await _db.Taxons.FirstOrDefaultAsync(t => t.TaxonId == TaxonId);
+
+    if (taxon == null)
+    {
+        return BadRequest();
+    }
+
+    // Create the observation
+    Observation observation = new Observation
+    {
+        AuthorId = author.AuthorId,
+        TaxonId = taxon.TaxonId,
+        Text = ObservationText,
+        TimeStamp = DateTime.UtcNow
+    };
+
+    _db.Observations.Add(observation);
+    await _db.SaveChangesAsync();
+
+    return RedirectToPage();
 }
 }

@@ -239,4 +239,55 @@ public class PostRepository : IPostRepository
 
         return count;
     }
+
+    public void CreateObservation(int authorId, string text)
+    {
+        using SqliteConnection connection =
+            new SqliteConnection(connectionString);
+
+        connection.Open();
+
+        using SqliteCommand command =
+            connection.CreateCommand();
+
+        command.CommandText = """
+            INSERT INTO observation (author_id, text, pub_date)
+            VALUES ($authorId, $text, $pubDate)
+            """;
+
+        command.Parameters.AddWithValue("$authorId", authorId);
+        command.Parameters.AddWithValue("$text", text);
+        command.Parameters.AddWithValue("$pubDate", DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+
+        command.ExecuteNonQuery();
+    }
+
+    public int? GetUserIdByEmail(string email)
+    {
+        using SqliteConnection connection =
+            new SqliteConnection(connectionString);
+
+        connection.Open();
+
+        using SqliteCommand command =
+            connection.CreateCommand();
+
+        command.CommandText = """
+            SELECT user_id
+            FROM user
+            WHERE email = $email
+            """;
+
+        command.Parameters.AddWithValue("$email", email);
+
+        object? result = command.ExecuteScalar();
+
+        if (result == null)
+        {
+            return null;
+        }
+
+        return Convert.ToInt32(result);
+    }
+
 }

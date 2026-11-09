@@ -1,20 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Bison.Razor.Data;
+using Bison.Razor.Models;
 
 namespace Bison.Razor.Pages;
 
 public class UserTimelineModel : PageModel
 {
-    private readonly IObservationService _service;
+    private readonly BisonDBContext _db;
+    private readonly int _pageSize = 32;
     public List<ObservationViewModel> Observations { get; set; } = new List<ObservationViewModel>();
     public int CurrentPage { get; set; } = 1;
     public bool HasNextPage { get; set; } = false;
 
-    public UserTimelineModel(IObservationService service)
+    public UserTimelineModel(BisonDBContext db)
     {
-        _service = service;
+        _db = db;
     }
 
+    
     public ActionResult OnGet(string author, [FromQuery] int page = 1)
     {
         if (page < 1)
@@ -23,12 +28,28 @@ public class UserTimelineModel : PageModel
         }
 
         CurrentPage = page;
-        Observations = _service.GetObservationsFromAuthor(author, page);
 
-        int totalObservations = _service.CountObservationsFromAuthor(author);
-        int observationsShownSoFar = CurrentPage * _service.PageSize;
-        HasNextPage = observationsShownSoFar < totalObservations;
+        var observations = _db.Observations
+            .Include(o => o.Author)
+            .Where(o => o.Author.Name == author)
+            .OrderByDescending(o => o.TimeStamp);
+
+        int totalObservations = observations.Count();
+
+        Observations = observations
+            .Skip((page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList()
+            .Select(o => new ObservationViewModel(
+                o.PostId,
+                o.Author.Name,
+                o.Text,
+                o.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            .ToList();
+
+        HasNextPage = page * _pageSize < totalObservations;
 
         return Page();
     }
+
 }

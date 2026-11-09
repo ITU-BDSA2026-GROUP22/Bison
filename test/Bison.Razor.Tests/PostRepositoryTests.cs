@@ -79,4 +79,50 @@ public class PostRepositoryTests : IDisposable {
         Assert.Equal(1, _db.CountObservationsFromAuthor("Peter"));
         Assert.Equal(0, _db.CountObservationsFromAuthor("NoSuchUser"));
     }
+
+    [Fact]
+    public void CreateObservation_AddsObservationToDatabase()
+    {
+        _db.CreateObservation(1, "A new observation");
+
+        List<Observation> observations = _db.GetObservations();
+
+        Observation observation = Assert.Single(
+            observations,
+            observation => observation.Message == "A new observation");
+
+        Assert.Equal("Peter", observation.Author);
+    }
+
+    [Fact]
+    public void ObservationService_CreatesObservation()
+    {
+        IObservationService service = new ObservationService(_db);
+
+        service.CreateObservation(1, "Created through service");
+
+        List<Observation> observations = _db.GetObservations();
+
+        Observation observation = Assert.Single(
+            observations,
+            o => o.Message == "Created through service");
+
+        Assert.Equal("Peter", observation.Author);
+    }
+
+    [Fact]
+    public void GetUserIdByEmail_ReturnsCorrectUserId()
+    {
+        int? userId = _db.GetUserIdByEmail("edka@itu.dk");
+
+        Assert.Equal(3, userId);
+    }
+
+    [Fact]
+    public void GetUserIdByEmail_ReturnsNullForUnknownEmail()
+    {
+        int? userId = _db.GetUserIdByEmail("unknown@example.com");
+
+        Assert.Null(userId);
+    }
 }

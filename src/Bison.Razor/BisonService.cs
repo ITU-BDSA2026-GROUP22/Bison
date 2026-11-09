@@ -1,6 +1,7 @@
 using SimpleDB;
 
 public record ObservationViewModel(
+    int ID,
     string Author,
     string Message,
     string Timestamp);
@@ -17,6 +18,8 @@ public interface IObservationService
     int CountObservations();
 
     int CountObservationsFromAuthor(string author);
+
+    void CreateObservation(int authorId, string text);
 }
 
 public class ObservationService : IObservationService
@@ -74,6 +77,7 @@ public class ObservationService : IObservationService
                 UnixTimeStampToDateTimeString(observation.Timestamp);
 
             ObservationViewModel viewModel = new ObservationViewModel(
+                observation.ID,
                 observation.Author,
                 observation.Message,
                 timestamp);
@@ -94,4 +98,10 @@ public class ObservationService : IObservationService
 
         return dateTime.ToString("MM/dd/yy H:mm:ss");
     }
+
+    public void CreateObservation(int authorId, string text)
+    {
+        _db.CreateObservation(authorId, text);
+    }
+
 }
