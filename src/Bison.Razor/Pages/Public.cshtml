@@ -7,6 +7,30 @@
 
 <div>
     <h2> Public Timeline </h2>
+    
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="observationbox">
+            <form method="post">
+                <h3>What did you see, @User.Identity.Name?</h3>
+
+                <input type="text"
+                    asp-for="ObservationText"
+                    placeholder="Write an observation..." />
+
+                <select asp-for="TaxonId">
+                    @foreach (var taxon in Model.Taxons)
+                    {
+                        <option value="@taxon.TaxonId">
+                            @taxon.VernacularName
+                        </option>
+                    }
+                </select>
+
+                <input type="submit" value="Observe" />
+            </form>
+        </div>
+    }
 
     @if (Model.Observations.Any())
     {
@@ -16,7 +40,7 @@
                 <li>
                     <p>
                         <strong>
-                            <a href="/@obs.Author">@obs.Author</a>
+                            <a href="/ob/@obs.ID">@obs.Author</a>
                         </strong>
                         @obs.Message
                         <small>&mdash; @obs.Timestamp</small>

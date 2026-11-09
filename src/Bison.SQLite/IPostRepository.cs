@@ -11,6 +11,9 @@ public interface IPostRepository
     Observation? GetObservation(int id);
 
     int CountObservations();
-
     int CountObservationsFromAuthor(string author);
+
+    void CreateObservation(int authorId, string text);
+
+    int? GetUserIdByEmail(string email);
 }

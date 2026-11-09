@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SimpleDB;
 using Bison.Razor;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -48,13 +47,52 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 .AddEntityFrameworkStores<BisonDBContext>();
 
-builder.Services.AddAuthentication().AddGitHub(options => 
+
+builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.ClientId = builder.Configuration["authentication:github:clientId"] ?? "";
-    options.ClientSecret = builder.Configuration["authentication:github:clientSecret"] ?? "";
-    options.CallbackPath = "/signin-github";
-    options.Scope.Add("user:email");
+    options.Events.OnSigningIn = async context =>
+    {
+        UserManager<IdentityUser> userManager =context.HttpContext.RequestServices.GetRequiredService<UserManager<IdentityUser>>();
+
+        BisonDBContext db = context.HttpContext.RequestServices.GetRequiredService<BisonDBContext>();
+
+        if (context.Principal == null)
+        {
+            return;
+        }
+
+        IdentityUser? user = await userManager.GetUserAsync(context.Principal);
+
+        if (user?.Email == null)
+        {
+            return;
+        }
+
+        bool authorExists = await db.Authors.AnyAsync(a => a.Email == user.Email);
+
+        if (!authorExists)
+        {
+            Bison.Razor.Models.Author author = new Bison.Razor.Models.Author
+            {
+                Name = user.UserName ?? user.Email,
+                Email = user.Email
+            };
+
+            db.Authors.Add(author);
+            await db.SaveChangesAsync();
+        }
+    };
 });
+
+
+
+//builder.Services.AddAuthentication().AddGitHub(options => 
+//{
+//    options.ClientId = builder.Configuration["authentication:github:clientId"] ?? "";
+//    options.ClientSecret = builder.Configuration["authentication:github:clientSecret"] ?? "";
+//    options.CallbackPath = "/signin-github";
+//    options.Scope.Add("user:email");
+//});
 
 var app = builder.Build();
 

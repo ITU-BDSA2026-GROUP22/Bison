@@ -1,7 +1,52 @@
 ﻿@page "/ob/{id:int}"
 @model Bison.Razor.Pages.ObservationModel
 
+@{
+    Layout = "_Layout";
+}
+
+@if (Model.Observation != null)
+{
+    <div class="observationbox">
+        <h2>Observation</h2>
+
+        <p>
+            <strong>@Model.Observation.Username</strong>
+            @Model.Observation.Text
+
+            <small>
+                — @Model.FormatDate(Model.Observation.PubDate) UTC
+            </small>
+        </p>
+    </div>
+}
+
 <h3>Proposals</h3>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="observationbox">
+        <form method="post"
+              asp-page-handler="Proposal"
+              asp-route-id="@RouteData.Values["id"]">
+
+            <h3>Propose a taxon</h3>
+
+            <select asp-for="ProposalTaxonId">
+                @foreach (var taxon in Model.Taxons)
+                {
+                    <option value="@taxon.TaxonId">
+                        @taxon.VernacularName
+                    </option>
+                }
+            </select>
+
+            <span asp-validation-for="ProposalTaxonId"></span>
+
+            <input type="submit" value="Propose" />
+        </form>
+    </div>
+}
 
 @if (Model.Proposals.Count == 0)
 {
@@ -24,6 +69,24 @@ else
 }
 
 <h3>Comments</h3>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="commentbox">
+        <form method="post" asp-route-id="@RouteData.Values["id"]">
+            <h3>Write a comment</h3>
+
+            <input type="text"
+                   asp-for="CommentText"
+                   placeholder="Write a comment..." />
+
+            <span asp-validation-for="CommentText"></span>
+
+            <input type="submit" value="Comment" />
+        </form>
+    </div>
+}
+
 
 @if (Model.Comments.Count == 0)
 {
