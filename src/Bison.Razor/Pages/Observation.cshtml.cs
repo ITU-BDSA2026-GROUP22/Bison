@@ -49,7 +49,8 @@ public class ObservationModel : PageModel
             ID = observation.PostId,
             Username = observation.Author.Name,
             Text = observation.Text,
-            PubDate = new DateTimeOffset(observation.TimeStamp).ToUnixTimeSeconds()
+            PubDate = new DateTimeOffset(observation.TimeStamp).ToUnixTimeSeconds(),
+            PictureId = observation.PictureId
         };
 
         Comments = observation.Comments.Select(comment => new CommentDTO

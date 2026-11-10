@@ -18,6 +18,11 @@
                 — @Model.FormatDate(Model.Observation.PubDate) UTC
             </small>
         </p>
+
+        @if (Model.Observation.PictureId != null)
+        {
+            <img class="observationpicture" src="/picture/@Model.Observation.PictureId" alt="Picture from the observation" />
+        }
     </div>
 }
 

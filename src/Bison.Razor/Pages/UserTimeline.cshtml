@@ -15,6 +15,10 @@
             @foreach (var ob in Model.Observations)
             {
                 <li>
+                    @if (ob.PictureId != null)
+                    {
+                        <img class="thumbnail" src="/picture/@ob.PictureId" alt="Picture from the observation" />
+                    }
                     <p>
                         <strong>
                             <a href="/@ob.Author">@ob.Author</a>

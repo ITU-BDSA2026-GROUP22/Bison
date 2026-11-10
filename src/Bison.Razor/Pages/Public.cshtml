@@ -11,7 +11,7 @@
     @if (User.Identity?.IsAuthenticated == true)
     {
         <div class="observationbox">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <h3>What did you see, @User.Identity.Name?</h3>
 
                 <input type="text"
@@ -27,6 +27,12 @@
                     }
                 </select>
 
+                <input type="file"
+                    asp-for="PictureFile"
+                    accept="image/jpeg,image/png" />
+
+                <span asp-validation-for="PictureFile"></span>
+
                 <input type="submit" value="Observe" />
             </form>
         </div>
@@ -38,6 +44,10 @@
             @foreach (var obs in Model.Observations)
             {
                 <li>
+                    @if (obs.PictureId != null)
+                    {
+                        <img class="thumbnail" src="/picture/@obs.PictureId" alt="Picture from the observation" />
+                    }
                     <p>
                         <strong>
                             <a href="/ob/@obs.ID">@obs.Author</a>

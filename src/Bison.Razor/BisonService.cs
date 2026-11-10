@@ -4,7 +4,8 @@ public record ObservationViewModel(
     int ID,
     string Author,
     string Message,
-    string Timestamp);
+    string Timestamp,
+    int? PictureId = null);
 
 public interface IObservationService
 {
