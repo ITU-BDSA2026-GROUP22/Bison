@@ -96,6 +96,7 @@ public async Task<IActionResult> OnPostAsync()
     if (!ModelState.IsValid)
 {
     Taxons = await _db.Taxons.Where(t => !string.IsNullOrWhiteSpace(t.VernacularName)).OrderBy(t => t.VernacularName).ToListAsync();
+    return Page();
 }
 
     // Check that the user is logged in
