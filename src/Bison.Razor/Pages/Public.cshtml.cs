@@ -16,6 +16,8 @@ public class PublicModel : PageModel
     public string ObservationText { get; set; } = "";
     [BindProperty]
     public int TaxonId { get; set; }
+    [BindProperty]
+    public IFormFile? PictureFile { get; set; }
     public List<Taxon> Taxons { get; set; } = new();
     private readonly IObservationService _service;
     private readonly BisonDBContext _db;
@@ -77,7 +79,8 @@ public class PublicModel : PageModel
             o.PostId,
             o.Author.Name,
             o.Text,
-            o.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            o.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+            o.PictureId))
         .ToList();
 
     int observationsShownSoFar =
@@ -92,10 +95,21 @@ public class PublicModel : PageModel
 
 public async Task<IActionResult> OnPostAsync()
 {
+    Picture? picture = null;
+
+    if (PictureFile != null) {
+        picture = await PictureUpload.ReadAsync(PictureFile);
+
+        if (picture == null) {
+            ModelState.AddModelError(nameof(PictureFile), PictureUpload.ErrorMessage);
+        }
+    }
+
     // Prevent empty observations from being submitted and can't be more than set limit
     if (!ModelState.IsValid)
 {
     Taxons = await _db.Taxons.Where(t => !string.IsNullOrWhiteSpace(t.VernacularName)).OrderBy(t => t.VernacularName).ToListAsync();
+    return Page();
 }
 
     // Check that the user is logged in
@@ -126,7 +140,8 @@ public async Task<IActionResult> OnPostAsync()
         AuthorId = author.AuthorId,
         TaxonId = taxon.TaxonId,
         Text = ObservationText,
-        TimeStamp = DateTime.UtcNow
+        TimeStamp = DateTime.UtcNow,
+        Picture = picture
     };
 
     _db.Observations.Add(observation);

@@ -15,6 +15,7 @@ public class BisonDBContext : IdentityDbContext<IdentityUser>
     public DbSet<Observation> Observations { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Proposal> Proposals { get; set; }
+    public DbSet<Picture> Pictures { get; set; }
 
     public BisonDBContext(DbContextOptions<BisonDBContext> options)
         : base(options)

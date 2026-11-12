@@ -44,7 +44,8 @@ public class UserTimelineModel : PageModel
                 o.PostId,
                 o.Author.Name,
                 o.Text,
-                o.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+                o.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                o.PictureId))
             .ToList();
 
         HasNextPage = page * _pageSize < totalObservations;

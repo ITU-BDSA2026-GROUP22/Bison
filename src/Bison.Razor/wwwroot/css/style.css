@@ -287,3 +287,21 @@ ul.nav li a {
 ul.nav li a:hover {
     background-color: #8b4949;
 }
+
+/* ictures */
+div.page ul.observations li {
+  overflow: auto;
+}
+
+div.page ul.observations li img.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+div.page div.observationbox img.observationpicture {
+  display: block;
+  max-width: 100%;
+  max-height: 400px;
+  margin-top: 5px;
+}

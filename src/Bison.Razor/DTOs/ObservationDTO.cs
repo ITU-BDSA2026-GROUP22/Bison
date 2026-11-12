@@ -6,4 +6,5 @@ public class ObservationDTO
     public string Username { get; set; } = "";
     public string Text { get; set; } = "";
     public long PubDate { get; set; }
+    public int? PictureId { get; set; }
 }

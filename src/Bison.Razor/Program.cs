@@ -86,13 +86,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 
 
-//builder.Services.AddAuthentication().AddGitHub(options => 
-//{
-//    options.ClientId = builder.Configuration["authentication:github:clientId"] ?? "";
-//    options.ClientSecret = builder.Configuration["authentication:github:clientSecret"] ?? "";
-//    options.CallbackPath = "/signin-github";
-//    options.Scope.Add("user:email");
-//});
+builder.Services.AddAuthentication().AddGitHub(options => 
+{
+   options.ClientId = builder.Configuration["authentication:github:clientId"] ?? "";
+   options.ClientSecret = builder.Configuration["authentication:github:clientSecret"] ?? "";
+   options.CallbackPath = "/signin-github";
+   options.Scope.Add("user:email");
+});
 
 var app = builder.Build();
 
