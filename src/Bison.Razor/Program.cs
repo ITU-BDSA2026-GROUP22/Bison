@@ -29,6 +29,11 @@ builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(
 );
 
 string databasePath = Path.Combine(builder.Environment.ContentRootPath, "bison.db");
+string? databasePathFromSettings = builder.Configuration["BisonDatabasePath"];
+if (databasePathFromSettings != null)
+{
+    databasePath = databasePathFromSettings;
+}
 string connectionString = "Data Source=" + databasePath;
 
 builder.Services.AddDbContext<BisonDBContext>(options =>

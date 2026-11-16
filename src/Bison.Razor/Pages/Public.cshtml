@@ -16,9 +16,10 @@
 
                 <input type="text"
                     asp-for="ObservationText"
+                    aria-label="Observation text"
                     placeholder="Write an observation..." />
 
-                <select asp-for="TaxonId">
+                <select asp-for="TaxonId" aria-label="Species">
                     @foreach (var taxon in Model.Taxons)
                     {
                         <option value="@taxon.TaxonId">
@@ -29,6 +30,7 @@
 
                 <input type="file"
                     asp-for="PictureFile"
+                    aria-label="Picture"
                     accept="image/jpeg,image/png" />
 
                 <span asp-validation-for="PictureFile"></span>
