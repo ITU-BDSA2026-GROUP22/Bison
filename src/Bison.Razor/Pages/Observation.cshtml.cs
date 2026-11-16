@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Bison.Razor.Data;
-using Bison.Razor.DTOs;
+using Bison.Core.DTOs;
 using Bison.Razor.Models;
 
 namespace Bison.Razor.Pages;

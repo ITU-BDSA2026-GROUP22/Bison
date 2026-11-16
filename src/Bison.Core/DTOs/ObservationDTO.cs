@@ -1,4 +1,4 @@
-namespace Bison.Razor.DTOs;
+namespace Bison.Core.DTOs;
 
 public class ObservationDTO
 {
