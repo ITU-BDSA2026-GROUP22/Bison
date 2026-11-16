@@ -16,17 +16,6 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IObservationService, ObservationService>();
 builder.Services.AddScoped<ITaxonFilterService, TaxonFilterService>();
 
-string dataFolder = Path.GetFullPath(
-    Path.Combine(builder.Environment.ContentRootPath, "../Bison.CSVDBService")
-);
-
-builder.Services.AddSingleton<IDatabaseRepository<Comment>>(
-    new CSVDatabase<Comment>(Path.Combine(dataFolder, "comments.csv"))
-);
-
-builder.Services.AddSingleton<IDatabaseRepository<Proposal>>(
-    new CSVDatabase<Proposal>(Path.Combine(dataFolder, "proposals.csv"))
-);
 
 string databasePath = Path.Combine(builder.Environment.ContentRootPath, "bison.db");
 string connectionString = "Data Source=" + databasePath;
