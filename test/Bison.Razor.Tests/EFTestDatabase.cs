@@ -1,4 +1,4 @@
-using Bison.Razor.Data;
+using Bison.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

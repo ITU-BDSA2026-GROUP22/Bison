@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Bison.Razor.Data;
-using Bison.Razor.Models;
+using Bison.Infrastructure.Data;
+using Bison.Infrastructure.Models;
 
 namespace Bison.Razor.Pages;
 

@@ -1,4 +1,4 @@
-module {:extern "Bison.Razor.Models"} Models {
+module {:extern "Bison.Infrastructure.Models"} Models {
 
   class {:extern} Taxon {
     function {:extern "IsSubTaxon"} isSubTaxon(ancestor: Taxon): bool

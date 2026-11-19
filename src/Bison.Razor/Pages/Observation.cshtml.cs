@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using Bison.Razor.Data;
+using Bison.Infrastructure.Data;
 using Bison.Core.DTOs;
-using Bison.Razor.Models;
+using Bison.Infrastructure.Models;
 
 namespace Bison.Razor.Pages;
 

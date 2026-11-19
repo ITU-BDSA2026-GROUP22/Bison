@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using Bison.Razor.Data;
-using Bison.Razor.Models;
+using Bison.Infrastructure.Data;
+using Bison.Infrastructure.Models;
 
 namespace Bison.Razor.Pages;
 
@@ -43,7 +43,7 @@ public class PublicModel : PageModel
 
     CurrentPage = page;
 
-    List<Bison.Razor.Models.Observation> observations =
+    List<Bison.Infrastructure.Models.Observation> observations =
         _db.Observations
             .Include(o => o.Author)
             .Include(o => o.Taxon)

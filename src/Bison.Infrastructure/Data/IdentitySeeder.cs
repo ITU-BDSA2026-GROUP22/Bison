@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Bison.Razor.Data;
+namespace Bison.Infrastructure.Data;
 
 public static class IdentitySeeder
 {

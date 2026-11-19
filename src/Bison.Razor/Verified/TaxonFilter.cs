@@ -13,7 +13,7 @@ using System.Collections;
 // TaxonFilter.dfy
 
 
-module {:extern ""Bison.Razor.Models""} Models {
+module {:extern ""Bison.Infrastructure.Models""} Models {
   class {:extern} Taxon {
     function {:extern ""IsSubTaxon""} isSubTaxon(ancestor: Taxon): bool
       decreases ancestor
@@ -136,33 +136,33 @@ internal static class FuncExtensions {
   }
 }
 // end of class FuncExtensions
-namespace Bison.Razor.Models {
+namespace Bison.Infrastructure.Models {
 
 
 
-} // end of namespace Bison.Razor.Models
+} // end of namespace Bison.Infrastructure.Models
 namespace TaxonFilter {
 
   public partial class __default {
-    public static bool HasTaxonOrSubTaxon(Bison.Razor.Models.Taxon root, Bison.Razor.Models.Observation observation)
+    public static bool HasTaxonOrSubTaxon(Bison.Infrastructure.Models.Taxon root, Bison.Infrastructure.Models.Observation observation)
     {
-      Bison.Razor.Models.Taxon _0_taxon = (observation).GetTaxon();
+      Bison.Infrastructure.Models.Taxon _0_taxon = (observation).GetTaxon();
       return (_0_taxon).IsSubTaxon(root);
     }
-    public static Dafny.ISequence<Bison.Razor.Models.Observation> FilterBy(Bison.Razor.Models.Taxon root, Dafny.ISequence<Bison.Razor.Models.Observation> observations)
+    public static Dafny.ISequence<Bison.Infrastructure.Models.Observation> FilterBy(Bison.Infrastructure.Models.Taxon root, Dafny.ISequence<Bison.Infrastructure.Models.Observation> observations)
     {
-      Dafny.ISequence<Bison.Razor.Models.Observation> _hresult = Dafny.Sequence<Bison.Razor.Models.Observation>.Empty;
-      Dafny.ISequence<Bison.Razor.Models.Observation> _0_result;
-      _0_result = Dafny.Sequence<Bison.Razor.Models.Observation>.FromElements();
+      Dafny.ISequence<Bison.Infrastructure.Models.Observation> _hresult = Dafny.Sequence<Bison.Infrastructure.Models.Observation>.Empty;
+      Dafny.ISequence<Bison.Infrastructure.Models.Observation> _0_result;
+      _0_result = Dafny.Sequence<Bison.Infrastructure.Models.Observation>.FromElements();
       BigInteger _1_index;
       _1_index = BigInteger.Zero;
       while ((_1_index) < (new BigInteger((observations).Count))) {
-        Dafny.ISequence<Bison.Razor.Models.Observation> _2_observationsUpToNext;
+        Dafny.ISequence<Bison.Infrastructure.Models.Observation> _2_observationsUpToNext;
         _2_observationsUpToNext = (observations).Take((_1_index) + (BigInteger.One));
-        Bison.Razor.Models.Observation _3_observation;
+        Bison.Infrastructure.Models.Observation _3_observation;
         _3_observation = (observations).Select(_1_index);
         if (TaxonFilter.__default.HasTaxonOrSubTaxon(root, _3_observation)) {
-          _0_result = Dafny.Sequence<Bison.Razor.Models.Observation>.Concat(_0_result, Dafny.Sequence<Bison.Razor.Models.Observation>.FromElements(_3_observation));
+          _0_result = Dafny.Sequence<Bison.Infrastructure.Models.Observation>.Concat(_0_result, Dafny.Sequence<Bison.Infrastructure.Models.Observation>.FromElements(_3_observation));
         }
         _1_index = (_1_index) + (BigInteger.One);
       }
@@ -178,9 +178,9 @@ namespace Bison.Verified {
   public partial class ObservationFilter {
     public ObservationFilter() {
     }
-    public static Dafny.ISequence<Bison.Razor.Models.Observation> Filter(Bison.Razor.Models.Taxon root, Dafny.ISequence<Bison.Razor.Models.Observation> observations)
+    public static Dafny.ISequence<Bison.Infrastructure.Models.Observation> Filter(Bison.Infrastructure.Models.Taxon root, Dafny.ISequence<Bison.Infrastructure.Models.Observation> observations)
     {
-      Dafny.ISequence<Bison.Razor.Models.Observation> result = Dafny.Sequence<Bison.Razor.Models.Observation>.Empty;
+      Dafny.ISequence<Bison.Infrastructure.Models.Observation> result = Dafny.Sequence<Bison.Infrastructure.Models.Observation>.Empty;
       result = TaxonFilter.__default.FilterBy(root, observations);
       return result;
     }

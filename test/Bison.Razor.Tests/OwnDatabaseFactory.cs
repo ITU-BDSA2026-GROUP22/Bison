@@ -1,6 +1,6 @@
 
-using Bison.Razor.Data;
-using Bison.Razor.Models;
+using Bison.Infrastructure.Data;
+using Bison.Infrastructure.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;

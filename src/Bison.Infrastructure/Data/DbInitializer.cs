@@ -1,6 +1,9 @@
-using Bison.Razor.Data;
-using Bison.Razor.Models;
+using Bison.Infrastructure.Models;
 using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Bison.Infrastructure.Data;
 
 public static class DbInitializer
 {

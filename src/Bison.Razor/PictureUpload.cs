@@ -1,4 +1,4 @@
-using Bison.Razor.Models;
+using Bison.Infrastructure.Models;
 
 namespace Bison.Razor;
 

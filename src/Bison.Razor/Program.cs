@@ -1,4 +1,4 @@
-using Bison.Razor.Data;
+using Bison.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SimpleDB;
@@ -61,7 +61,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
         if (!authorExists)
         {
-            Bison.Razor.Models.Author author = new Bison.Razor.Models.Author
+            Bison.Infrastructure.Models.Author author = new Bison.Infrastructure.Models.Author
             {
                 Name = user.UserName ?? user.Email,
                 Email = user.Email
