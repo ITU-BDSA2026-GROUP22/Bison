@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bison.Razor\Bison.Razor.csproj" />
-    <ProjectReference Include="..\..\src\Bison.SQLite\Bison.SQLite.csproj" />
   </ItemGroup>
 
 </Project>

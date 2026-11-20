@@ -1,12 +1,4 @@
 # Maps changed file paths to PR labels (used by pr-labeler.yml)
-database:
-  - changed-files:
-      - any-glob-to-any-file: 'src/Database/**'
-
-cli:
-  - changed-files:
-      - any-glob-to-any-file: 'src/Bison.CLI/**'
-
 ci/cd:
   - changed-files:
       - any-glob-to-any-file: '.github/workflows/**'
