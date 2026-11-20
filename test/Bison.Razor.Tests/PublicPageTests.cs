@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Bison.Razor.Pages;
 using Bison.Infrastructure.Data;
+using Bison.Infrastructure.Services;
 using Bison.Infrastructure.Models;
 
 namespace Bison.Razor.Tests;

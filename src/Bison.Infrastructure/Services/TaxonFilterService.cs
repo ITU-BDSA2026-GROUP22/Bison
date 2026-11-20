@@ -1,6 +1,6 @@
 using Bison.Infrastructure.Models;
 using Bison.Verified;
-namespace Bison.Razor;
+namespace Bison.Infrastructure.Services;
 
 public interface ITaxonFilterService
 {

@@ -26,7 +26,7 @@ jobs:
         run: |
           dafny translate cs src/Bison.Dafny/TaxonFilter.dfy \
             --include-runtime false \
-            --output src/Bison.Razor/Verified/TaxonFilter.cs
+            --output src/Bison.Infrastructure/Verified/TaxonFilter.cs
 
       - name: Restore dependencies
         run: dotnet restore Bison.sln
