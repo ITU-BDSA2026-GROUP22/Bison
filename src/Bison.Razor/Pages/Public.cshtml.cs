@@ -19,16 +19,15 @@ public class PublicModel : PageModel
     [BindProperty]
     public IFormFile? PictureFile { get; set; }
     public List<Taxon> Taxons { get; set; } = new();
-    private readonly IObservationService _service;
     private readonly BisonDBContext _db;
     private readonly ITaxonFilterService _taxonFilterService;
+    private readonly int _pageSize = 32;
     public List<ObservationViewModel> Observations { get; set; } = new List<ObservationViewModel>();
     public int CurrentPage { get; set; } = 1;
     public bool HasNextPage { get; set; } = false;
 
-    public PublicModel(IObservationService service, BisonDBContext db, ITaxonFilterService taxonFilterService)
+    public PublicModel(BisonDBContext db, ITaxonFilterService taxonFilterService)
     {
-        _service = service;
         _db = db;
         _taxonFilterService = taxonFilterService;
 
@@ -66,12 +65,12 @@ public class PublicModel : PageModel
     }
 
     int totalObservations = observations.Count;
-    int observationsToSkip = (page - 1) * _service.PageSize;
+    int observationsToSkip = (page - 1) * _pageSize;
 
     observations = observations
         .OrderByDescending(o => o.TimeStamp)
         .Skip(observationsToSkip)
-        .Take(_service.PageSize)
+        .Take(_pageSize)
         .ToList();
 
     Observations = observations
@@ -83,8 +82,7 @@ public class PublicModel : PageModel
             o.PictureId))
         .ToList();
 
-    int observationsShownSoFar =
-        CurrentPage * _service.PageSize;
+    int observationsShownSoFar = CurrentPage * _pageSize;
 
     HasNextPage = observationsShownSoFar < totalObservations;
 

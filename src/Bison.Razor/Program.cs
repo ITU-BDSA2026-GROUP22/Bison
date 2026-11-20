@@ -1,7 +1,6 @@
 using Bison.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SimpleDB;
 using Bison.Razor;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +11,6 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AddPageRoute("/Public", "ob");
     options.Conventions.AddPageRoute("/UserTimeline", "obs/{author}");
 });
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<IObservationService, ObservationService>();
 builder.Services.AddScoped<ITaxonFilterService, TaxonFilterService>();
 
 
