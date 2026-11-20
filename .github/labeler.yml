@@ -7,6 +7,4 @@ documentation:
   - changed-files:
       - any-glob-to-any-file: '**/*.md'
 
-data:
-  - changed-files:
-      - any-glob-to-any-file: '**/*.csv'
+
