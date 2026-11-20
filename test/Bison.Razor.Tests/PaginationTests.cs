@@ -1,146 +1,71 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
-using SimpleDB;
+using System.Text.RegularExpressions;
 
 namespace Bison.Razor.Tests;
 
 // Test database: 70 observations in total.
 // Alexander wrote 40 of them, Lars wrote 15, Sebastian wrote 10 and Tony wrote 5.
-[Collection(EnvironmentVariableCollection.Name)]
-public class PaginationTests : IDisposable
+public class PaginationTests
 {
-    private readonly string _databasePath;
-    private readonly IPostRepository _db;
+    //each <li> in the html is one observation
+    private static async Task<List<string>> GetObservationsFrom(string url) {
+        using OwnDatabaseFactory factory = new OwnDatabaseFactory();
 
-    public PaginationTests()
-    {
-        string fileName = "bison_pagination_test_" + Guid.NewGuid() + ".db";
-        _databasePath = Path.Combine(Path.GetTempPath(), fileName);
+        factory.SeedPaginationData();
+        using HttpClient client = factory.CreateClient();
 
-        CreateTestDatabase(_databasePath);
+        string html = await client.GetStringAsync(url);
 
-        Environment.SetEnvironmentVariable("BISONDBPATH", _databasePath);
-        _db = new PostRepository(_databasePath);
-    }
-
-    public void Dispose()
-    {
-        Environment.SetEnvironmentVariable("BISONDBPATH", null);
-        SqliteConnection.ClearAllPools();
-        File.Delete(_databasePath);
-    }
-
-    private static void CreateTestDatabase(string databasePath)
-    {
-        using SqliteConnection connection = new SqliteConnection($"Data Source={databasePath}");
-        connection.Open();
-
-        using SqliteCommand createTables = connection.CreateCommand();
-        createTables.CommandText = """
-            CREATE TABLE user (
-                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username STRING NOT NULL,
-                email STRING NOT NULL
-            );
-            CREATE TABLE observation (
-                observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                author_id INTEGER NOT NULL,
-                text STRING NOT NULL,
-                pub_date INTEGER
-            );
-            INSERT INTO user VALUES (1, 'Alexander', 'alexander@example.com');
-            INSERT INTO user VALUES (2, 'Lars', 'lars@example.com');
-            INSERT INTO user VALUES (3, 'Sebastian', 'sebastian@example.com');
-            INSERT INTO user VALUES (4, 'Tony', 'tony@example.com');
-            """;
-        createTables.ExecuteNonQuery();
-
-        for (int i = 0; i < 70; i++)
-        {
-            int authorId;
-            if (i < 40)
-            {
-                authorId = 1;
-            }
-            else if (i < 55)
-            {
-                authorId = 2;
-            }
-            else if (i < 65)
-            {
-                authorId = 3;
-            }
-            else
-            {
-                authorId = 4;
-            }
-
-            using SqliteCommand insertObservation = connection.CreateCommand();
-            insertObservation.CommandText = """
-                INSERT INTO observation (author_id, text, pub_date)
-                VALUES ($authorId, $text, $pubDate)
-                """;
-            insertObservation.Parameters.AddWithValue("$authorId", authorId);
-            insertObservation.Parameters.AddWithValue("$text", "Observation number " + i);
-            insertObservation.Parameters.AddWithValue("$pubDate", 1690000000 + i);
-            insertObservation.ExecuteNonQuery();
-        }
+        return Regex.Matches(html, "<li>(.*?)</li>", RegexOptions.Singleline)
+            .Select(match => match.Groups[1].Value)
+            .ToList();
     }
 
     [Fact]
-    public void FirstPage_Has32Observations()
-    {
-        List<Observation> page = _db.GetObservations(1);
+    public async Task FirstPage_Has32Observations() {
+        List<string> page = await GetObservationsFrom("/obs?page=1");
 
         Assert.Equal(32, page.Count);
     }
 
     [Fact]
-    public void LastPage_HasTheRemaining6Observations()
-    {
-        List<Observation> page = _db.GetObservations(3);
+    public async Task LastPage_HasTheRemaining6Observations() {
+        List<string> page = await GetObservationsFrom("/obs?page=3");
 
         Assert.Equal(6, page.Count);
     }
 
     [Fact]
-    public void PageZero_ReturnsTheFirstPage()
-    {
-        List<Observation> pageZero = _db.GetObservations(0);
-        List<Observation> pageOne = _db.GetObservations(1);
+    public async Task PageZero_ReturnsTheFirstPage() {
+        List<string> pageZero = await GetObservationsFrom("/obs?page=0");
+        List<string> pageOne = await GetObservationsFrom("/obs?page=1");
 
         Assert.Equal(pageOne, pageZero);
     }
 
     [Fact]
-    public void FirstAndSecondPage_DoNotOverlap()
-    {
-        List<Observation> pageOne = _db.GetObservations(1);
-        List<Observation> pageTwo = _db.GetObservations(2);
+    public async Task FirstAndSecondPage_DoNotOverlap() {
+        List<string> pageOne = await GetObservationsFrom("/obs?page=1");
+        List<string> pageTwo = await GetObservationsFrom("/obs?page=2");
 
-        foreach (Observation observation in pageTwo)
-        {
+        foreach (string observation in pageTwo) {
             Assert.DoesNotContain(observation, pageOne);
         }
     }
 
     [Fact]
-    public void FirstPage_StartsWithTheNewestObservation()
-    {
-        List<Observation> page = _db.GetObservations(1);
+    public async Task FirstPage_StartsWithTheNewestObservation() {
+        List<string> page = await GetObservationsFrom("/obs?page=1");
 
-        Assert.Equal("Observation number 69", page[0].Message);
+        Assert.Contains("Observation number 69", page[0]);
     }
 
     [Fact]
-    public void AuthorSecondPage_HasTheRemaining8ObservationsFromThatAuthor()
-    {
-        List<Observation> page = _db.GetObservationsFromAuthor("Alexander", 2);
+    public async Task AuthorSecondPage_HasTheRemaining8ObservationsFromThatAuthor() {
+        List<string> page = await GetObservationsFrom("/obs/Alexander?page=2");
 
         Assert.Equal(8, page.Count);
-        foreach (Observation observation in page)
-        {
-            Assert.Equal("Alexander", observation.Author);
+        foreach (string observation in page) {
+            Assert.Contains(">Alexander</a>", observation);
         }
     }
 

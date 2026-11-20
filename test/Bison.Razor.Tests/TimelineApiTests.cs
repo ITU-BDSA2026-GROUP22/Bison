@@ -9,24 +9,19 @@ using Bison.Infrastructure.Models;
 
 namespace Bison.Razor.Tests;
 
-//starts the app with its own test database. The DBFacade gets replaced directly, so these tests dont use BISONDBPATH
+//starts the app with its own test database, so these tests dont touch the real bison.db
 public class ExampleDatabaseFactory : WebApplicationFactory<Program> {
-    public string DatabasePath { get; } = TestDatabase.CreateExampleDatabase();
     public string EFDatabasePath { get; } = EFTestDatabase.CreatePath();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) {
         builder.ConfigureServices(services => {
-            services.AddScoped<IPostRepository>(
-            provider => new PostRepository(DatabasePath));
-
             EFTestDatabase.UseDatabase(services, EFDatabasePath);
         });
     }
 
     protected override void Dispose(bool disposing) {
         base.Dispose(disposing);
-        TestDatabase.Delete(DatabasePath);
-        TestDatabase.Delete(EFDatabasePath);
+        EFTestDatabase.Delete(EFDatabasePath);
     }
 
         public void SeedExampleEFDatabase()
@@ -72,21 +67,21 @@ public class ExampleDatabaseFactory : WebApplicationFactory<Program> {
             {
                 Author = peter,
                 Taxon = taxon,
-                Text = TestDatabase.PetersObservation,
+                Text = EFTestDatabase.PetersObservation,
                 TimeStamp = DateTime.UtcNow
             },
             new Observation
             {
                 Author = petra,
                 Taxon = taxon,
-                Text = TestDatabase.PetrasObservation,
+                Text = EFTestDatabase.PetrasObservation,
                 TimeStamp = DateTime.UtcNow.AddSeconds(1)
             },
             new Observation
             {
                 Author = eduard,
                 Taxon = taxon,
-                Text = TestDatabase.EduardsObservation,
+                Text = EFTestDatabase.EduardsObservation,
                 TimeStamp = DateTime.UtcNow.AddSeconds(2)
             });
 
@@ -131,7 +126,7 @@ public class TimelineApiTests : IClassFixture<ExampleDatabaseFactory> {
 
         Assert.Contains(
             ObservationsIn(html),
-            observation => IsObservationBy(observation, "Peter", TestDatabase.PetersObservation));
+            observation => IsObservationBy(observation, "Peter", EFTestDatabase.PetersObservation));
     }
 
     [Fact]
@@ -141,8 +136,8 @@ public class TimelineApiTests : IClassFixture<ExampleDatabaseFactory> {
         List<string> observations = ObservationsIn(html);
 
         Assert.Equal(3, observations.Count);
-        Assert.Contains(observations, observation => IsObservationBy(observation, "Petra", TestDatabase.PetrasObservation));
-        Assert.Contains(observations, observation => IsObservationBy(observation, "Eduard", TestDatabase.EduardsObservation));
+        Assert.Contains(observations, observation => IsObservationBy(observation, "Petra", EFTestDatabase.PetrasObservation));
+        Assert.Contains(observations, observation => IsObservationBy(observation, "Eduard", EFTestDatabase.EduardsObservation));
     }
 
     [Theory]
@@ -153,7 +148,7 @@ public class TimelineApiTests : IClassFixture<ExampleDatabaseFactory> {
 
         Assert.Contains(
             ObservationsIn(html),
-            observation => IsObservationBy(observation, "Petra", TestDatabase.PetrasObservation));
+            observation => IsObservationBy(observation, "Petra", EFTestDatabase.PetrasObservation));
     }
 
     [Fact]
@@ -162,7 +157,7 @@ public class TimelineApiTests : IClassFixture<ExampleDatabaseFactory> {
 
         string observation = Assert.Single(ObservationsIn(html));
         Assert.Contains(">Petra</a>", observation);
-        Assert.DoesNotContain(TestDatabase.PetersObservation, html);
+        Assert.DoesNotContain(EFTestDatabase.PetersObservation, html);
     }
 
     [Fact]

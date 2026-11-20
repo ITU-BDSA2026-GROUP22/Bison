@@ -47,7 +47,6 @@ public class PublicPageTests
     {
         // Arrange
         PublicModel page = new PublicModel(
-        new ObservationService(new PostRepository(":memory:")),
         _db,
         new TaxonFilterService());
 
@@ -88,7 +87,6 @@ public async Task OnPostAsync_EmptyTextDoesNotCreateObservation()
 {
     // Arrange
     PublicModel page = new PublicModel(
-        new ObservationService(new PostRepository()),
         _db,
         new TaxonFilterService());
 

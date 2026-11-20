@@ -74,6 +74,6 @@ public class OwnDatabaseFactory : WebApplicationFactory<Program>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-        TestDatabase.Delete(EFDatabasePath);
+        EFTestDatabase.Delete(EFDatabasePath);
     }
 }
